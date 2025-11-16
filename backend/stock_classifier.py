@@ -1,0 +1,296 @@
+"""
+BIST100 Hisse Senetleri Sektör Sınıflandırması ve Filtreleme
+"""
+
+# Sektörel sınıflandırma
+STOCK_SECTORS = {
+    # Bankacılık ve Finans
+    'AKBNK': 'Bankacılık',
+    'GARAN': 'Bankacılık',
+    'HALKB': 'Bankacılık',
+    'ISCTR': 'Bankacılık',
+    'SKBNK': 'Bankacılık',
+    'TSKB': 'Bankacılık',
+    'VAKBN': 'Bankacılık',
+    'YKBNK': 'Bankacılık',
+    'ALBRK': 'Bankacılık',
+    'ISMEN': 'Finans',
+    'UNLU': 'Finans',
+    'GEDIK': 'Finans',
+    'PRKME': 'Finans',
+
+    # Teknoloji ve Yazılım
+    'ASELS': 'Teknoloji',
+    'LOGO': 'Teknoloji',
+    'LINK': 'Teknoloji',
+    'NETAS': 'Teknoloji',
+    'TTKOM': 'Teknoloji',
+    'TCELL': 'Teknoloji',
+    'KRONT': 'Teknoloji',
+    'VBTYZ': 'Teknoloji',
+    'TKNSA': 'Teknoloji',
+
+    # Savunma ve Havacılık
+    'ASELS': 'Savunma',
+    'THYAO': 'Havacılık',
+    'PGSUS': 'Havacılık',
+    'TAVHL': 'Havacılık',
+
+    # Enerji
+    'AKSA': 'Enerji',
+    'AKSEN': 'Enerji',
+    'AYEN': 'Enerji',
+    'AYDEM': 'Enerji',
+    'ZOREN': 'Enerji',
+    'AKENR': 'Enerji',
+    'AKFYE': 'Enerji',
+    'ENJSA': 'Enerji',
+    'TUPRS': 'Enerji',
+    'TGSAN': 'Enerji',
+    'PETKM': 'Enerji',
+
+    # Perakende ve Gıda
+    'BIMAS': 'Perakende',
+    'SOKM': 'Perakende',
+    'MGROS': 'Perakende',
+    'BIZIM': 'Perakende',
+    'MAVI': 'Perakende',
+    'ULKER': 'Gıda',
+    'CCOLA': 'Gıda',
+    'AEFES': 'Gıda',
+    'PNSUT': 'Gıda',
+    'TATGD': 'Gıda',
+    'PENGD': 'Gıda',
+    'BANVT': 'Gıda',
+
+    # Otomotiv
+    'FROTO': 'Otomotiv',
+    'TOASO': 'Otomotiv',
+    'DOAS': 'Otomotiv',
+    'OTKAR': 'Otomotiv',
+    'TTRAK': 'Otomotiv',
+    'ASUZU': 'Otomotiv',
+    'KARSN': 'Otomotiv',
+
+    # İnşaat ve Gayrimenkul
+    'ENKAI': 'İnşaat',
+    'TKFEN': 'İnşaat',
+    'EKGYO': 'Gayrimenkul',
+    'ALGYO': 'Gayrimenkul',
+    'ISGYO': 'Gayrimenkul',
+    'VKGYO': 'Gayrimenkul',
+    'HLGYO': 'Gayrimenkul',
+
+    # Çimento ve Yapı Malzemeleri
+    'AFYON': 'Çimento',
+    'AKCNS': 'Çimento',
+    'BTCIM': 'Çimento',
+    'BUCIM': 'Çimento',
+    'CIMSA': 'Çimento',
+    'KONYA': 'Çimento',
+    'OYAKC': 'Çimento',
+
+    # Demir-Çelik ve Metal
+    'EREGL': 'Demir-Çelik',
+    'KRDMA': 'Demir-Çelik',
+    'KRDMB': 'Demir-Çelik',
+    'ISDMR': 'Demir-Çelik',
+    'SARKY': 'Metal',
+
+    # Tekstil ve Deri
+    'BRISA': 'Tekstil',
+    'KORDS': 'Tekstil',
+    'SASA': 'Tekstil',
+    'YUNSA': 'Tekstil',
+
+    # Cam ve Seramik
+    'SISE': 'Cam',
+    'TRKCM': 'Cam',
+    'KUTPO': 'Seramik',
+
+    # Holding
+    'SAHOL': 'Holding',
+    'KCHOL': 'Holding',
+    'AGHOL': 'Holding',
+    'DOHOL': 'Holding',
+
+    # Kimya
+    'ALKIM': 'Kimya',
+    'GUBRF': 'Kimya',
+    'SODA': 'Kimya',
+
+    # Elektrik-Elektronik
+    'ARCLK': 'Elektrik-Elektronik',
+    'VESTL': 'Elektrik-Elektronik',
+    'VESBE': 'Elektrik-Elektronik',
+
+    # Hizmetler
+    'CLEBI': 'Hizmetler',
+    'LKMNH': 'Sağlık',
+    'MLP': 'Sağlık',
+
+    # Spor
+    'GSRAY': 'Spor',
+    'FENER': 'Spor',
+    'BJKAS': 'Spor',
+    'TSPOR': 'Spor',
+}
+
+# Risk Profilleri (volatilite bazlı)
+RISK_PROFILES = {
+    'düşük': {
+        'sectors': ['Bankacılık', 'Gıda', 'Perakende', 'Holding'],
+        'volatility_threshold': 0.30,  # Düşük volatilite
+        'description': 'Kararlı gelir, düşük risk'
+    },
+    'orta': {
+        'sectors': ['Bankacılık', 'Enerji', 'İnşaat', 'Otomotiv', 'Teknoloji', 'Gıda', 'Perakende'],
+        'volatility_threshold': 0.50,
+        'description': 'Dengeli risk-getiri'
+    },
+    'yüksek': {
+        'sectors': ['Teknoloji', 'Savunma', 'Enerji', 'Havacılık', 'Demir-Çelik'],
+        'volatility_threshold': 1.0,  # Yüksek volatilite kabul edilir
+        'description': 'Yüksek getiri potansiyeli, yüksek risk'
+    }
+}
+
+# Yatırım süresi - periyot eşleştirmesi
+INVESTMENT_PERIODS = {
+    'kısa': {
+        'period': '6mo',
+        'description': 'Kısa vadeli (6 ay)',
+        'focus': 'Momentum ve kısa vadeli trendler'
+    },
+    'orta': {
+        'period': '1y',
+        'description': 'Orta vadeli (1 yıl)',
+        'focus': 'Dengeli trend analizi'
+    },
+    'uzun': {
+        'period': '5y',
+        'description': 'Uzun vadeli (5 yıl)',
+        'focus': 'Uzun vadeli büyüme ve istikrar'
+    }
+}
+
+
+def get_stocks_by_sector(sector):
+    """
+    Belirli bir sektördeki hisseleri döndürür
+
+    Args:
+        sector (str): Sektör adı
+
+    Returns:
+        list: Hisse sembolleri
+    """
+    return [symbol for symbol, sec in STOCK_SECTORS.items() if sec == sector]
+
+
+def get_available_sectors():
+    """
+    Mevcut tüm sektörleri döndürür
+
+    Returns:
+        list: Benzersiz sektör listesi
+    """
+    return sorted(list(set(STOCK_SECTORS.values())))
+
+
+def filter_stocks_by_preferences(risk_profile='orta', sectors=None, max_stocks=10):
+    """
+    Kullanıcı tercihlerine göre hisse filtreler
+
+    Args:
+        risk_profile (str): 'düşük', 'orta', 'yüksek'
+        sectors (list): İstenen sektörler (None ise tüm sektörler)
+        max_stocks (int): Maksimum hisse sayısı
+
+    Returns:
+        list: Filtrelenmiş hisse sembolleri
+    """
+    # Risk profiline göre uygun sektörleri al
+    profile = RISK_PROFILES.get(risk_profile, RISK_PROFILES['orta'])
+    allowed_sectors = profile['sectors']
+
+    # Kullanıcı sektör belirttiyse, kesişimi al
+    if sectors:
+        allowed_sectors = [s for s in allowed_sectors if s in sectors]
+
+    # Sektörlere göre hisseleri filtrele
+    filtered_stocks = []
+    for symbol, sector in STOCK_SECTORS.items():
+        if sector in allowed_sectors:
+            filtered_stocks.append(symbol)
+
+    # Çeşitlilik için sektörlerden dengeli dağılım
+    stocks_by_sector = {}
+    for symbol in filtered_stocks:
+        sector = STOCK_SECTORS[symbol]
+        if sector not in stocks_by_sector:
+            stocks_by_sector[sector] = []
+        stocks_by_sector[sector].append(symbol)
+
+    # Her sektörden eşit sayıda hisse al
+    balanced_stocks = []
+
+    # Eğer hiç hisse bulunamadıysa boş liste döndür
+    if len(stocks_by_sector) == 0:
+        return []
+
+    stocks_per_sector = max(1, max_stocks // len(stocks_by_sector))
+
+    for sector, symbols in stocks_by_sector.items():
+        balanced_stocks.extend(symbols[:stocks_per_sector])
+
+    # Max hisse sayısını aşmıyorsa geri kalanı ekle
+    if len(balanced_stocks) < max_stocks:
+        remaining = max_stocks - len(balanced_stocks)
+        for symbols in stocks_by_sector.values():
+            for symbol in symbols:
+                if symbol not in balanced_stocks:
+                    balanced_stocks.append(symbol)
+                    if len(balanced_stocks) >= max_stocks:
+                        break
+            if len(balanced_stocks) >= max_stocks:
+                break
+
+    return balanced_stocks[:max_stocks]
+
+
+def get_recommendation_summary(risk_profile, investment_period, sectors, max_stocks):
+    """
+    Öneri özetini döndürür
+
+    Args:
+        risk_profile (str): Risk profili
+        investment_period (str): Yatırım süresi
+        sectors (list): Seçili sektörler
+        max_stocks (int): Max hisse sayısı
+
+    Returns:
+        dict: Öneri özeti
+    """
+    profile = RISK_PROFILES.get(risk_profile, RISK_PROFILES['orta'])
+    period = INVESTMENT_PERIODS.get(investment_period, INVESTMENT_PERIODS['orta'])
+
+    recommended_stocks = filter_stocks_by_preferences(risk_profile, sectors, max_stocks)
+
+    return {
+        'risk_profile': {
+            'level': risk_profile,
+            'description': profile['description'],
+            'recommended_sectors': profile['sectors']
+        },
+        'investment_period': {
+            'duration': investment_period,
+            'period': period['period'],
+            'description': period['description'],
+            'focus': period['focus']
+        },
+        'selected_sectors': sectors if sectors else profile['sectors'],
+        'recommended_stocks': recommended_stocks,
+        'stock_count': len(recommended_stocks),
+        'max_stocks': max_stocks
+    }

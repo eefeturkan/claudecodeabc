@@ -180,6 +180,7 @@ function displayResults(data) {
     displayMetrics(optimization);
 
     // Grafikleri çiz
+    plotSectorChart(optimization.sector_distribution);
     plotWeightsChart(optimization.weights);
     plotWeightsTable(optimization.weights);
     plotConvergenceChart(optimization.history);
@@ -222,15 +223,18 @@ function displayRecommendedStocks(stocks) {
  * Metrikleri göster
  */
 function displayMetrics(optimization) {
-    const { metrics, summary, investment_amount } = optimization;
+    const { metrics, summary, investment_amount, period_years, expected_total_amount } = optimization;
 
-    // Toplam yatırım
-    document.getElementById('totalInvestment').textContent =
-        formatCurrency(investment_amount);
+    // Toplam yatırım - Başlangıç ve beklenen toplam
+    document.getElementById('totalInvestment').innerHTML =
+        `<div style="font-size: 0.85em; margin-bottom: 4px;">Başlangıç: ${formatCurrency(investment_amount)}</div>` +
+        `<div style="font-size: 1.1em; font-weight: 700; color: var(--green-primary);">Beklenen: ${formatCurrency(expected_total_amount)}</div>`;
 
-    // Beklenen getiri
-    document.getElementById('expectedReturn').textContent =
-        formatPercent(summary.expected_return_pct);
+    // Beklenen getiri - Hem yıllık hem de toplam göster
+    const periodText = period_years === 0.5 ? '6 Ay' : period_years === 1 ? '1 Yıl' : '5 Yıl';
+    document.getElementById('expectedReturn').innerHTML =
+        `<div style="font-size: 0.85em; margin-bottom: 4px;">Yıllık: ${formatPercent(summary.expected_annual_return_pct)}</div>` +
+        `<div style="font-size: 1.1em; font-weight: 700;">${periodText}: ${formatPercent(summary.expected_total_return_pct)}</div>`;
 
     // Volatilite
     document.getElementById('volatility').textContent =
@@ -259,6 +263,44 @@ function displayMetrics(optimization) {
 
 
 /**
+ * Sektör dağılımı pasta grafiği
+ */
+function plotSectorChart(sectorDistribution) {
+    if (!sectorDistribution || sectorDistribution.length === 0) return;
+
+    const data = [{
+        type: 'pie',
+        labels: sectorDistribution.map(s => s.sector),
+        values: sectorDistribution.map(s => s.percentage),
+        textinfo: 'label+percent',
+        textposition: 'auto',
+        hovertemplate: '<b>%{label}</b><br>' +
+                       'Ağırlık: %{value:.2f}%<br>' +
+                       '<extra></extra>',
+        marker: {
+            colors: ['#00ff88', '#00d67e', '#00b36b', '#3498db', '#2ecc71', '#f39c12', '#e74c3c']
+        }
+    }];
+
+    const layout = {
+        title: {
+            text: 'Sektörel Dağılım (%)',
+            font: { size: 15, color: '#e4e9f0' }
+        },
+        showlegend: true,
+        height: 400,
+        margin: { t: 60, b: 40, l: 30, r: 30 },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { color: '#e4e9f0' },
+        legend: { font: { size: 11 } }
+    };
+
+    Plotly.newPlot('sectorChart', data, layout, { responsive: true, displayModeBar: false });
+}
+
+
+/**
  * Portföy dağılımı pasta grafiği
  */
 function plotWeightsChart(weights) {
@@ -281,15 +323,19 @@ function plotWeightsChart(weights) {
 
     const layout = {
         title: {
-            text: 'Portföy Dağılımı (%)',
-            font: { size: 16 }
+            text: 'Hisse Dağılımı (%)',
+            font: { size: 15, color: '#e4e9f0' }
         },
         showlegend: true,
-        height: 500,
-        margin: { t: 50, b: 50, l: 50, r: 50 }
+        height: 450,
+        margin: { t: 60, b: 40, l: 30, r: 30 },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { color: '#e4e9f0' },
+        legend: { font: { size: 10 } }
     };
 
-    Plotly.newPlot('weightsChart', data, layout, { responsive: true });
+    Plotly.newPlot('weightsChart', data, layout, { responsive: true, displayModeBar: false });
 }
 
 
@@ -372,24 +418,27 @@ function plotConvergenceChart(history) {
     const layout = {
         title: {
             text: 'Algoritma Yakınsama Süreci',
-            font: { size: 16 }
+            font: { size: 15, color: '#e4e9f0' }
         },
         xaxis: {
             title: 'İterasyon',
-            gridcolor: '#ecf0f1'
+            gridcolor: '#2a3150',
+            color: '#e4e9f0'
         },
         yaxis: {
             title: 'Fitness (Sharpe Ratio)',
-            gridcolor: '#ecf0f1'
+            gridcolor: '#2a3150',
+            color: '#e4e9f0'
         },
         showlegend: true,
-        height: 400,
-        margin: { t: 50, b: 50, l: 60, r: 50 },
-        plot_bgcolor: '#ffffff',
-        paper_bgcolor: '#ffffff'
+        height: 380,
+        margin: { t: 60, b: 60, l: 70, r: 30 },
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { color: '#e4e9f0' }
     };
 
-    Plotly.newPlot('convergenceChart', data, layout, { responsive: true });
+    Plotly.newPlot('convergenceChart', data, layout, { responsive: true, displayModeBar: false });
 }
 
 

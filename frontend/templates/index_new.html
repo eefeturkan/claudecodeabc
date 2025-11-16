@@ -57,27 +57,26 @@
                     <h3>2. Yatırım Süreniz</h3>
                     <div class="form-group">
                         <label>Ne kadar süre yatırım yapmayı planlıyorsunuz?</label>
-                        <small class="info-text">Not: Seçtiğiniz süre kadar geçmiş hisse verisi analiz edilir (örn: 1 yıl seçerseniz, son 1 yılın fiyat hareketleri kullanılır)</small>
                         <div class="radio-group">
                             <label class="radio-option">
                                 <input type="radio" name="investmentPeriod" value="kısa">
                                 <span class="radio-label">
                                     <strong>Kısa Vade</strong>
-                                    <small>6 ay geçmiş veri - Kısa vadeli fırsatlar</small>
+                                    <small>6 ay - Kısa vadeli fırsatlar</small>
                                 </span>
                             </label>
                             <label class="radio-option">
                                 <input type="radio" name="investmentPeriod" value="orta" checked>
                                 <span class="radio-label">
                                     <strong>Orta Vade</strong>
-                                    <small>1 yıl geçmiş veri - Dengeli yaklaşım</small>
+                                    <small>1 yıl - Dengeli yaklaşım</small>
                                 </span>
                             </label>
                             <label class="radio-option">
                                 <input type="radio" name="investmentPeriod" value="uzun">
                                 <span class="radio-label">
                                     <strong>Uzun Vade</strong>
-                                    <small>5 yıl geçmiş veri - Uzun vadeli büyüme</small>
+                                    <small>5 yıl - Uzun vadeli büyüme</small>
                                 </span>
                             </label>
                         </div>
@@ -103,12 +102,12 @@
                     <div class="form-group">
                         <label for="maxStocks">Maksimum Hisse Sayısı:</label>
                         <select id="maxStocks" class="form-control">
-                            <option value="5">5 Hisse (Konsantre portföy)</option>
-                            <option value="10" selected>10 Hisse (Dengeli - Önerilen)</option>
-                            <option value="15">15 Hisse (İyi çeşitlendirme)</option>
-                            <option value="20">20 Hisse (Maksimum çeşitlendirme)</option>
+                            <option value="5">5 Hisse</option>
+                            <option value="10" selected>10 Hisse</option>
+                            <option value="15">15 Hisse</option>
+                            <option value="20">20 Hisse</option>
                         </select>
-                        <small>Daha fazla hisse = daha iyi çeşitlendirme ve risk dağılımı</small>
+                        <small>Portföyünüzde olmasını istediğiniz maksimum hisse sayısı</small>
                     </div>
 
                     <div class="form-group">
@@ -146,8 +145,7 @@
                         <div class="form-group">
                             <label for="maxWeight">Maks Hisse Ağırlığı (%):</label>
                             <input type="number" id="maxWeight" class="form-control"
-                                   value="30" min="10" max="100" step="5">
-                            <small>Tek bir hissenin alabileceği maksimum ağırlık (çeşitlendirme için düşük tutun)</small>
+                                   value="50" min="10" max="100" step="5">
                         </div>
 
                         <div class="form-group">
@@ -221,15 +219,9 @@
                         </div>
                     </div>
 
-                    <!-- Sektör Dağılımı -->
-                    <div class="subsection">
-                        <h3>Sektör Dağılımı</h3>
-                        <div id="sectorChart"></div>
-                    </div>
-
                     <!-- Portföy Ağırlıkları -->
                     <div class="subsection">
-                        <h3>Hisse Dağılımı</h3>
+                        <h3>Optimal Portföy Dağılımı</h3>
                         <div id="weightsChart"></div>
                     </div>
 
