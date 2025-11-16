@@ -90,6 +90,7 @@ def optimize_portfolio():
         min_weight = data.get('min_weight', 0.0)
         max_weight = data.get('max_weight', 0.5)
         risk_free_rate = data.get('risk_free_rate', 0.10)
+        investment_amount = data.get('investment_amount', 100000)
 
         # Validasyon
         if not symbols or len(symbols) < 2:
@@ -144,14 +145,16 @@ def optimize_portfolio():
             verbose=True
         )
 
-        # Hisse isimlerini ekle
+        # Hisse isimlerini ve TL tutarlarını ekle
         weights_with_names = []
         for symbol, weight in results['weights'].items():
+            amount_tl = weight * investment_amount
             weights_with_names.append({
                 'symbol': symbol,
                 'name': get_stock_name(symbol),
                 'weight': weight,
-                'percentage': weight * 100
+                'percentage': weight * 100,
+                'amount_tl': amount_tl
             })
 
         # Ağırlığa göre sırala
@@ -161,6 +164,7 @@ def optimize_portfolio():
         response = {
             'success': True,
             'objective': results['objective'],
+            'investment_amount': investment_amount,
             'weights': weights_with_names,
             'metrics': results['metrics'],
             'history': results['history'],

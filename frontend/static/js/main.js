@@ -111,7 +111,8 @@ async function runOptimization() {
         max_iterations: parseInt(document.getElementById('maxIterations').value),
         min_weight: parseFloat(document.getElementById('minWeight').value) / 100,
         max_weight: parseFloat(document.getElementById('maxWeight').value) / 100,
-        risk_free_rate: parseFloat(document.getElementById('riskFreeRate').value) / 100
+        risk_free_rate: parseFloat(document.getElementById('riskFreeRate').value) / 100,
+        investment_amount: parseFloat(document.getElementById('investmentAmount').value)
     };
 
     // Show progress
@@ -150,6 +151,8 @@ function displayResults(data) {
     resultsSection.classList.remove('hidden');
 
     // Update metrics
+    document.getElementById('totalInvestment').textContent =
+        formatCurrency(data.investment_amount || 0);
     document.getElementById('expectedReturn').textContent =
         (data.metrics.expected_return * 100).toFixed(2) + '%';
     document.getElementById('volatility').textContent =
@@ -162,6 +165,8 @@ function displayResults(data) {
         (data.metrics.max_drawdown * 100).toFixed(2) + '%';
     document.getElementById('diversification').textContent =
         data.metrics.diversification_ratio.toFixed(4);
+    document.getElementById('stockCount').textContent =
+        data.summary.stocks_with_weight || 0;
 
     // Display weights chart (pie chart)
     displayWeightsChart(data.weights);
@@ -219,6 +224,7 @@ function displayWeightsTable(weights) {
                     <th>Sembol</th>
                     <th>Şirket</th>
                     <th>Ağırlık</th>
+                    <th>Yatırım (₺)</th>
                     <th>Görsel</th>
                 </tr>
             </thead>
@@ -231,6 +237,7 @@ function displayWeightsTable(weights) {
                 <td><strong>${w.symbol}</strong></td>
                 <td>${w.name}</td>
                 <td><strong>${w.percentage.toFixed(2)}%</strong></td>
+                <td><strong>${formatCurrency(w.amount_tl || 0)}</strong></td>
                 <td>
                     <div style="width: 100%; background: #e9ecef; border-radius: 10px;">
                         <div class="weight-bar" style="width: ${w.percentage}%"></div>
@@ -328,4 +335,14 @@ function formatNumber(num, decimals = 2) {
 // Format percentage
 function formatPercent(num, decimals = 2) {
     return (num * 100).toFixed(decimals) + '%';
+}
+
+// Format currency (Turkish Lira)
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('tr-TR', {
+        style: 'currency',
+        currency: 'TRY',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount);
 }

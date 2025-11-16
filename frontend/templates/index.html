@@ -93,6 +93,13 @@
                                value="10" min="0" max="50" step="1">
                         <small>Türkiye için genellikle %10-40 arası</small>
                     </div>
+
+                    <div class="form-group">
+                        <label for="investmentAmount">Yatırım Tutarı (₺):</label>
+                        <input type="number" id="investmentAmount" class="form-control"
+                               value="100000" min="1000" max="10000000" step="1000">
+                        <small>Portföye yatırmak istediğiniz toplam tutar</small>
+                    </div>
                 </div>
 
                 <!-- Optimizasyon Butonu -->
@@ -118,6 +125,10 @@
                     <!-- Özet Metrikler -->
                     <div class="metrics-grid">
                         <div class="metric-card">
+                            <div class="metric-label">Toplam Yatırım</div>
+                            <div class="metric-value" id="totalInvestment">-</div>
+                        </div>
+                        <div class="metric-card">
                             <div class="metric-label">Beklenen Getiri</div>
                             <div class="metric-value" id="expectedReturn">-</div>
                         </div>
@@ -140,6 +151,10 @@
                         <div class="metric-card">
                             <div class="metric-label">Çeşitlendirme</div>
                             <div class="metric-value" id="diversification">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Hisse Sayısı</div>
+                            <div class="metric-value" id="stockCount">-</div>
                         </div>
                     </div>
 
