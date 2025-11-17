@@ -123,7 +123,7 @@ def optimize_portfolio():
                 'error': 'Veri çekilemedi. Lütfen sembolleri kontrol edin.'
             }), 400
 
-        # Getirileri hesapla
+        # Günlük getirileri hesapla
         returns_df = data_fetcher.calculate_returns(prices_df)
 
         if returns_df.empty or len(returns_df) < 10:
@@ -469,7 +469,7 @@ def optimize_with_preferences():
                 'error': 'Veri çekilemedi. Lütfen farklı tercihler deneyin.'
             }), 400
 
-        # Getirileri hesapla
+        # Günlük getirileri hesapla
         returns_df = data_fetcher.calculate_returns(prices_df)
 
         if returns_df.empty or len(returns_df) < 10:

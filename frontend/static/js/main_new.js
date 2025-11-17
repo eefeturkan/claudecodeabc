@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Gelişmiş ayarlar toggle
     setupAdvancedSettings();
 
+    // Bilgi paneli toggle
+    setupInfoPanel();
+
     // Sektörleri yükle
     await loadSectors();
 
@@ -33,6 +36,20 @@ function setupAdvancedSettings() {
         toggle.textContent = settings.classList.contains('hidden')
             ? '5. Gelişmiş Ayarlar (Opsiyonel) ▼'
             : '5. Gelişmiş Ayarlar (Opsiyonel) ▲';
+    });
+}
+
+
+/**
+ * Bilgi paneli toggle işlevi
+ */
+function setupInfoPanel() {
+    const toggle = document.getElementById('infoPanelToggle');
+    const content = document.getElementById('infoPanelContent');
+
+    toggle.addEventListener('click', () => {
+        content.classList.toggle('hidden');
+        toggle.classList.toggle('active');
     });
 }
 
@@ -285,15 +302,22 @@ function plotSectorChart(sectorDistribution) {
     const layout = {
         title: {
             text: 'Sektörel Dağılım (%)',
-            font: { size: 14, color: '#c9d1d9', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' }
+            font: { size: 16, color: '#c9d1d9', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' }
         },
         showlegend: true,
-        height: 400,
-        margin: { t: 50, b: 40, l: 30, r: 30 },
+        height: 500,
+        margin: { t: 60, b: 50, l: 50, r: 200 },
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         font: { color: '#8b949e', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' },
-        legend: { font: { size: 10 } }
+        legend: {
+            font: { size: 11 },
+            orientation: 'v',
+            x: 1.05,
+            y: 0.5,
+            xanchor: 'left',
+            yanchor: 'middle'
+        }
     };
 
     Plotly.newPlot('sectorChart', data, layout, { responsive: true, displayModeBar: false });
@@ -324,15 +348,22 @@ function plotWeightsChart(weights) {
     const layout = {
         title: {
             text: 'Hisse Dağılımı (%)',
-            font: { size: 14, color: '#c9d1d9', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' }
+            font: { size: 16, color: '#c9d1d9', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' }
         },
         showlegend: true,
-        height: 450,
-        margin: { t: 50, b: 40, l: 30, r: 30 },
+        height: 550,
+        margin: { t: 60, b: 50, l: 50, r: 250 },
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         font: { color: '#8b949e', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' },
-        legend: { font: { size: 10 } }
+        legend: {
+            font: { size: 11 },
+            orientation: 'v',
+            x: 1.05,
+            y: 0.5,
+            xanchor: 'left',
+            yanchor: 'middle'
+        }
     };
 
     Plotly.newPlot('weightsChart', data, layout, { responsive: true, displayModeBar: false });

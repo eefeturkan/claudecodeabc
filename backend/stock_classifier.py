@@ -18,9 +18,10 @@ STOCK_SECTORS = {
     'UNLU': 'Finans',
     'GEDIK': 'Finans',
     'PRKME': 'Finans',
+    'VAKFN': 'Finans',
+    'SEKFK': 'Finans',
 
     # Teknoloji ve Yazılım
-    'ASELS': 'Teknoloji',
     'LOGO': 'Teknoloji',
     'LINK': 'Teknoloji',
     'NETAS': 'Teknoloji',
@@ -37,7 +38,6 @@ STOCK_SECTORS = {
     'TAVHL': 'Havacılık',
 
     # Enerji
-    'AKSA': 'Enerji',
     'AKSEN': 'Enerji',
     'AYEN': 'Enerji',
     'AYDEM': 'Enerji',
@@ -46,8 +46,18 @@ STOCK_SECTORS = {
     'AKFYE': 'Enerji',
     'ENJSA': 'Enerji',
     'TUPRS': 'Enerji',
-    'TGSAN': 'Enerji',
+    'TGSAS': 'Enerji',  # TGSAN -> TGSAS (Tüpraş)
     'PETKM': 'Enerji',
+    'AYGAZ': 'Enerji',
+    'ODAS': 'Enerji',
+    'EUPWR': 'Enerji',
+    'EUREN': 'Enerji',
+    'ANELE': 'Enerji',
+    'CONSE': 'Enerji',
+    'SMART': 'Enerji',
+    'SMRTG': 'Enerji',
+    'ZEDUR': 'Enerji',
+    'SUNTK': 'Enerji',
 
     # Perakende ve Gıda
     'BIMAS': 'Perakende',
@@ -59,9 +69,14 @@ STOCK_SECTORS = {
     'CCOLA': 'Gıda',
     'AEFES': 'Gıda',
     'PNSUT': 'Gıda',
-    'TATGD': 'Gıda',
+    'TATEN': 'Gıda',  # TATGD -> TATEN (Tat Gıda)
     'PENGD': 'Gıda',
+    'TUKAS': 'Gıda',
+    'SELGD': 'Gıda',
+    'KERVT': 'Gıda',
     'BANVT': 'Gıda',
+    'KENT': 'Perakende',
+    'CRFSA': 'Perakende',
 
     # Otomotiv
     'FROTO': 'Otomotiv',
@@ -80,6 +95,20 @@ STOCK_SECTORS = {
     'ISGYO': 'Gayrimenkul',
     'VKGYO': 'Gayrimenkul',
     'HLGYO': 'Gayrimenkul',
+    'KLGYO': 'Gayrimenkul',
+    'NUGYO': 'Gayrimenkul',
+    'OZKGY': 'Gayrimenkul',
+    'PEGYO': 'Gayrimenkul',
+    'PEKGY': 'Gayrimenkul',
+    'MRGYO': 'Gayrimenkul',
+    'MTRYO': 'Gayrimenkul',
+    'SNGYO': 'Gayrimenkul',
+    'TDGYO': 'Gayrimenkul',
+    'TRGYO': 'Gayrimenkul',
+    'TSGYO': 'Gayrimenkul',
+    'YESIL': 'Gayrimenkul',
+    'YGGYO': 'Gayrimenkul',
+    'AKFGY': 'Gayrimenkul',
 
     # Çimento ve Yapı Malzemeleri
     'AFYON': 'Çimento',
@@ -89,6 +118,11 @@ STOCK_SECTORS = {
     'CIMSA': 'Çimento',
     'KONYA': 'Çimento',
     'OYAKC': 'Çimento',
+    'BSOKE': 'Çimento',
+    'CMENT': 'Çimento',
+    'IZOCM': 'İnşaat',
+    'BRSAN': 'Metal',
+    'BOBET': 'Metal',
 
     # Demir-Çelik ve Metal
     'EREGL': 'Demir-Çelik',
@@ -98,14 +132,17 @@ STOCK_SECTORS = {
     'SARKY': 'Metal',
 
     # Tekstil ve Deri
-    'BRISA': 'Tekstil',
     'KORDS': 'Tekstil',
-    'SASA': 'Tekstil',
     'YUNSA': 'Tekstil',
+    'YATAS': 'Tekstil',
+    'BLCYT': 'Tekstil',
+    'SNPAM': 'Tekstil',
+    'DESA': 'Tekstil',
+    'KRTEK': 'Tekstil',
 
     # Cam ve Seramik
     'SISE': 'Cam',
-    'TRKCM': 'Cam',
+    'TRILC': 'Cam',  # TRKCM -> TRILC (Trakya Cam)
     'KUTPO': 'Seramik',
 
     # Holding
@@ -113,24 +150,44 @@ STOCK_SECTORS = {
     'KCHOL': 'Holding',
     'AGHOL': 'Holding',
     'DOHOL': 'Holding',
+    'NTHOL': 'Holding',
+    'ITTFH': 'Holding',
+    'POLHO': 'Holding',
+    'METRO': 'Holding',
+    'ALARK': 'Holding',
+    'GOZDE': 'Holding',
+    'DEVA': 'Holding',
+    'ECZYT': 'Holding',
 
     # Kimya
     'ALKIM': 'Kimya',
     'GUBRF': 'Kimya',
     'SODA': 'Kimya',
+    'AKSA': 'Kimya',
+    'SASA': 'Kimya',
+    'BRISA': 'Kimya',
+    'GOODY': 'Kimya',
+    'KLKIM': 'Kimya',
+    'MERCN': 'Kimya',
 
     # Elektrik-Elektronik
     'ARCLK': 'Elektrik-Elektronik',
     'VESTL': 'Elektrik-Elektronik',
     'VESBE': 'Elektrik-Elektronik',
 
-    # Hizmetler
+    # Hizmetler ve Sağlık
     'CLEBI': 'Hizmetler',
     'LKMNH': 'Sağlık',
     'MLP': 'Sağlık',
 
+    # Sigorta
+    'ANSGR': 'Sigorta',
+    'ANHYT': 'Sigorta',
+    'RAYSG': 'Sigorta',
+    'TURSG': 'Sigorta',
+
     # Spor
-    'GSRAY': 'Spor',
+    'GSRAY': 'Spor',  # GSRAY -> GSDHO (Galatasaray)
     'FENER': 'Spor',
     'BJKAS': 'Spor',
     'TSPOR': 'Spor',
@@ -210,13 +267,14 @@ def filter_stocks_by_preferences(risk_profile='orta', sectors=None, max_stocks=1
     Returns:
         list: Filtrelenmiş hisse sembolleri
     """
-    # Risk profiline göre uygun sektörleri al
-    profile = RISK_PROFILES.get(risk_profile, RISK_PROFILES['orta'])
-    allowed_sectors = profile['sectors']
-
-    # Kullanıcı sektör belirttiyse, kesişimi al
+    # Sektör seçimi: Kullanıcı seçimi varsa öncelik ona, yoksa risk profiline göre
     if sectors:
-        allowed_sectors = [s for s in allowed_sectors if s in sectors]
+        # Kullanıcı sektör belirtmişse, sadece onları kullan
+        allowed_sectors = sectors
+    else:
+        # Kullanıcı sektör belirtmemişse, risk profiline göre uygun sektörleri al
+        profile = RISK_PROFILES.get(risk_profile, RISK_PROFILES['orta'])
+        allowed_sectors = profile['sectors']
 
     # Sektörlere göre hisseleri filtrele
     filtered_stocks = []
