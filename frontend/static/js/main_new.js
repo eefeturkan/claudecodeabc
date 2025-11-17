@@ -228,7 +228,7 @@ function displayMetrics(optimization) {
     // Toplam yatırım - Başlangıç ve beklenen toplam
     document.getElementById('totalInvestment').innerHTML =
         `<div style="font-size: 0.85em; margin-bottom: 4px;">Başlangıç: ${formatCurrency(investment_amount)}</div>` +
-        `<div style="font-size: 1.1em; font-weight: 700; color: var(--green-primary);">Beklenen: ${formatCurrency(expected_total_amount)}</div>`;
+        `<div style="font-size: 1.1em; font-weight: 700;">Beklenen: ${formatCurrency(expected_total_amount)}</div>`;
 
     // Beklenen getiri - Hem yıllık hem de toplam göster
     const periodText = period_years === 0.5 ? '6 Ay' : period_years === 1 ? '1 Yıl' : '5 Yıl';
@@ -278,22 +278,22 @@ function plotSectorChart(sectorDistribution) {
                        'Ağırlık: %{value:.2f}%<br>' +
                        '<extra></extra>',
         marker: {
-            colors: ['#00ff88', '#00d67e', '#00b36b', '#3498db', '#2ecc71', '#f39c12', '#e74c3c']
+            colors: ['#58a6ff', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4']
         }
     }];
 
     const layout = {
         title: {
             text: 'Sektörel Dağılım (%)',
-            font: { size: 15, color: '#e4e9f0' }
+            font: { size: 14, color: '#c9d1d9', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' }
         },
         showlegend: true,
         height: 400,
-        margin: { t: 60, b: 40, l: 30, r: 30 },
+        margin: { t: 50, b: 40, l: 30, r: 30 },
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        font: { color: '#e4e9f0' },
-        legend: { font: { size: 11 } }
+        font: { color: '#8b949e', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' },
+        legend: { font: { size: 10 } }
     };
 
     Plotly.newPlot('sectorChart', data, layout, { responsive: true, displayModeBar: false });
@@ -324,14 +324,14 @@ function plotWeightsChart(weights) {
     const layout = {
         title: {
             text: 'Hisse Dağılımı (%)',
-            font: { size: 15, color: '#e4e9f0' }
+            font: { size: 14, color: '#c9d1d9', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' }
         },
         showlegend: true,
         height: 450,
-        margin: { t: 60, b: 40, l: 30, r: 30 },
+        margin: { t: 50, b: 40, l: 30, r: 30 },
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        font: { color: '#e4e9f0' },
+        font: { color: '#8b949e', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' },
         legend: { font: { size: 10 } }
     };
 
@@ -397,7 +397,7 @@ function plotConvergenceChart(history) {
             mode: 'lines',
             name: 'En İyi Fitness',
             line: {
-                color: '#2ecc71',
+                color: '#58a6ff',
                 width: 2
             }
         },
@@ -408,7 +408,7 @@ function plotConvergenceChart(history) {
             mode: 'lines',
             name: 'Ortalama Fitness',
             line: {
-                color: '#3498db',
+                color: '#8b949e',
                 width: 2,
                 dash: 'dash'
             }
@@ -418,24 +418,24 @@ function plotConvergenceChart(history) {
     const layout = {
         title: {
             text: 'Algoritma Yakınsama Süreci',
-            font: { size: 15, color: '#e4e9f0' }
+            font: { size: 14, color: '#c9d1d9', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' }
         },
         xaxis: {
             title: 'İterasyon',
-            gridcolor: '#2a3150',
-            color: '#e4e9f0'
+            gridcolor: '#30363d',
+            color: '#8b949e'
         },
         yaxis: {
             title: 'Fitness (Sharpe Ratio)',
-            gridcolor: '#2a3150',
-            color: '#e4e9f0'
+            gridcolor: '#30363d',
+            color: '#8b949e'
         },
         showlegend: true,
         height: 380,
-        margin: { t: 60, b: 60, l: 70, r: 30 },
+        margin: { t: 50, b: 60, l: 70, r: 30 },
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        font: { color: '#e4e9f0' }
+        font: { color: '#8b949e', family: '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif' }
     };
 
     Plotly.newPlot('convergenceChart', data, layout, { responsive: true, displayModeBar: false });
@@ -447,9 +447,9 @@ function plotConvergenceChart(history) {
  */
 function generateColors(count) {
     const colors = [
-        '#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6',
-        '#1abc9c', '#34495e', '#16a085', '#27ae60', '#2980b9',
-        '#8e44ad', '#f1c40f', '#e67e22', '#e74c3c', '#95a5a6'
+        '#58a6ff', '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b',
+        '#10b981', '#06b6d4', '#6366f1', '#a855f7', '#f43f5e',
+        '#eab308', '#14b8a6', '#0ea5e9', '#8b5cf6', '#d946ef'
     ];
 
     // Renkleri tekrarla
