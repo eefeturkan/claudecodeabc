@@ -800,11 +800,128 @@ Gelişmiş kullanıcılar için aşağıdaki parametreler ayarlanabilir:
 | Max Ağırlık | %40 | %20 | %100 | Bir hissenin max portföy payı |
 | Risksiz Faiz | %45 | %0 | %100 | Sharpe hesabında kullanılan oran |
 
-### 7.4. Sonuç Gösterimi
+### 7.4. Başlangıç Ekranı (Welcome Screen)
+
+Kullanıcı ilk sayfayı açtığında modern ve interaktif bir karşılama ekranı görür:
+
+**7.4.1. Hoş Geldin Başlığı**
+- Gradient arka plan ile profesyonel görünüm
+- Animasyonlu hedef ikonu (🎯) - 2 saniyede nabız atıyor
+- "Akıllı Portföy Optimizasyonu" ana başlık
+- "Yapay Arı Kolonisi algoritması ile bilimsel portföy yönetimi" alt başlık
+
+**7.4.2. Nasıl Çalışır? - 4 Adımlı Süreç**
+
+Sistem işleyişi görsel kartlarla açıklanır:
+
+**Adım 1: Tercihlerinizi Belirleyin** 👤
+- Risk Profili, Yatırım Süresi, Sektörler seçimi
+- Mavi tag'ler ile görsel zenginlik
+
+**Adım 2: Hisse Filtreleme** 🔍
+- 283 hisse havuzu ve 20+ sektör istatistiği
+- Büyük mavi rakamlar ile dikkat çekici gösterim
+
+**Adım 3: ABC Optimizasyonu** 🐝
+- Employee Bees, Onlooker Bees, Scout Bees görselleri
+- Gri kutucuklar içinde arı türleri
+
+**Adım 4: Sonuçlar & Analiz** 📊
+- Getiri, Risk, Sharpe, Diversifikasyon badge'leri
+- Gradient renkli mini etiketler
+
+Her kart:
+- Hover efekti: 5px yukarı kalkar, mavi glow
+- Minimum 320px yükseklik (tüm kartlar eşit)
+- Aralarında → ok işaretleri (mobilde ↓ olur)
+
+**7.4.3. Sistem Özellikleri Grid**
+
+4 özellik kartı (2x2 veya 4x1 responsive):
+- 🎯 Sharpe Ratio Optimizasyonu
+- 🛡️ Risk Yönetimi
+- 🌐 Sektörel Çeşitlendirme
+- 📈 Gerçek Zamanlı Veri
+
+**7.4.4. Call-to-Action Bölümü**
+- "Hazır mısınız? Soldaki formu doldurup başlayın! 👈"
+- Animasyonlu sol ok (⬅️) - 1.5 saniyede sola hareket ediyor
+
+### 7.5. Tooltip Sistemi
+
+Metrik kartlarında hover tooltip'ler eklenmiştir:
+
+**Tooltip Tasarımı:**
+- Basit "?" ikonu (mavi çember border ile)
+- Hover'da: Mavi arka plan, beyaz metin, yukarı scale efekti
+- Açıklama balonu: 220px genişlik, koyu arka plan
+- Her metrik için özel açıklama metni
+
+**Tooltip İçerikleri:**
+- Beklenen Getiri: Geçmiş performans, gelecek garantisi değil
+- Volatilite: Dalgalanma miktarı açıklaması
+- Sharpe Ratio: >1 mükemmel, <0 kötü skalası
+- Sortino Ratio: Sadece aşağı risk ölçer
+- Max Drawdown: Örnek: -20% = portföy %20 değer kaybetti
+- Çeşitlendirme: >1.5 mükemmel, >1.2 iyi skalası
+
+### 7.6. Bilgi Paneli (Info Panel)
+
+Sayfa altında genişletilebilir detaylı bilgi paneli:
+
+**Toggle Butonu:**
+- "📚 Portföy Metriklerini Anlamak" başlık
+- ▼ ok işareti (açıkken ▲ olur)
+- Hover efekti: Gri arka plan, mavi border
+
+**Panel İçeriği (7 Bölüm):**
+
+1. **📈 Beklenen Getiri**
+   - Ne anlama gelir, nasıl hesaplanır
+   - Örnek: %50 getiri → 100k TL'den 150k TL
+   - ⚠️ Uyarı: Tahmin, garanti değil
+
+2. **📊 Volatilite**
+   - Dalgalanma açıklaması
+   - %10-20 düşük, %20-35 orta, %35+ yüksek
+   - Örnek: %30 volatilite senaryosu
+
+3. **⚖️ Sharpe Ratio**
+   - Risk-ayarlı getiri formülü
+   - Yorumlama skalası (>1.0 mükemmel)
+   - Örnek hesaplama
+
+4. **📉 Sortino Ratio**
+   - Sharpe'dan farkı (sadece aşağı risk)
+   - Neden önemli açıklaması
+
+5. **⬇️ Max Drawdown**
+   - Maksimum düşüş yüzdesi
+   - Yorumlama: -10% iyi, -35% kötü
+   - ⚠️ Psikolojik test: Panik satış yapar mısınız?
+
+6. **🎯 Çeşitlendirme Oranı**
+   - Risk dağılımı ölçüsü
+   - >1.5 mükemmel, <1.2 zayıf
+   - Altın kural: Tüm yumurtaları bir sepete koyma!
+
+7. **🎭 Risk Profilleri Nasıl Seçilir**
+   - Düşük: Emekliler, kısa vade
+   - Orta: Dengeli yaklaşım
+   - Yüksek: Genç, uzun vade
+   - ⚠️ Yüksek risk ≠ Daha fazla kazanç garantisi
+
+**Panel Stilleri:**
+- Grid layout: 2 sütun (450px min genişlik)
+- Her bölüm: Koyu gri arka plan, mavi başlık
+- Örnek kutucuklar: Açık gri arka plan, mavi sol border
+- Uyarı kutucuklar: Turuncu arka plan, turuncu sol border
+
+### 7.7. Sonuç Gösterimi
 
 Optimizasyon tamamlandıktan sonra sonuçlar 5 bölümde gösterilir:
 
-**7.4.1. Önerilen Hisseler**
+**7.7.1. Önerilen Hisseler**
 
 Algoritmanın seçtiği hisseler kart formatında listelenir.
 
@@ -816,9 +933,9 @@ Algoritmanın seçtiği hisseler kart formatında listelenir.
 - Hover efekti: Mavi border
 ```
 
-**7.4.2. Performans Metrikleri**
+**7.7.2. Performans Metrikleri**
 
-8 ana metrik kart formatında gösterilir:
+8 ana metrik kart formatında gösterilir (metriklerden 6'sında tooltip ikonu vardır):
 
 **Şekil 10'a buraya eklenecek:** Metrik Kartları Grid
 ```
@@ -833,9 +950,15 @@ Algoritmanın seçtiği hisseler kart formatında listelenir.
 - Portföydeki Hisse (5/20)
 ```
 
-**7.4.3. Sektör Dağılımı Grafiği**
+**7.7.3. Sektör Dağılımı Grafiği**
 
 Pasta grafiği ile portföyün sektörel dağılımı gösterilir.
+
+**Geliştirilmiş Layout:**
+- Grafik yüksekliği: 500px (daha geniş monitörlere optimize)
+- Legend pozisyonu: Sağ taraf (x=1.05, y=0.5, vertical)
+- Sağ margin: 200px (legend için alan)
+- Daha az boşluk, daha dengeli görünüm
 
 **Şekil 11'e buraya eklenecek:** Sektör Dağılımı Pasta Grafiği
 ```
@@ -850,9 +973,15 @@ Pasta grafiği ile portföyün sektörel dağılımı gösterilir.
 - Hover: Sektör adı + Yüzde
 ```
 
-**7.4.4. Hisse Dağılımı Grafiği ve Tablo**
+**7.7.4. Hisse Dağılımı Grafiği ve Tablo**
 
-İki görselleştirme:
+İki görselleştirme (pie chart için gelişmiş layout):
+
+**Grafik İyileştirmeleri:**
+- Yükseklik: 550px (daha büyük)
+- Sağ margin: 250px (uzun hisse isimleri için)
+- Legend: Sağda vertical yerleşim
+- Daha az yan boşluk
 
 **Şekil 12'ye buraya eklenecek:** Hisse Dağılımı Pasta + Tablo
 ```
@@ -869,7 +998,7 @@ Tablo:
 | ... | ... | ... | ... | ... |
 ```
 
-**7.4.5. Algoritma Yakınsama Grafiği**
+**7.7.5. Algoritma Yakınsama Grafiği**
 
 ABC algoritmasının iterasyonlar boyunca nasıl yakınsadığını gösteren çizgi grafiği.
 
@@ -884,7 +1013,7 @@ ABC algoritmasının iterasyonlar boyunca nasıl yakınsadığını gösteren ç
 - Başlangıçta düşük, hızla yükselip platoya ulaşmalı
 ```
 
-### 7.5. Responsive Tasarım
+### 7.8. Responsive Tasarım
 
 Uygulama farklı ekran boyutlarına uyumludur:
 
