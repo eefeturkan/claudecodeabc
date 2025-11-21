@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIST100 Portföy Optimizasyonu - ABC Algoritması</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>BIST100 Portföy Optimizasyonu</h1>
+            <p class="subtitle">Yapay Arı Kolonisi Algoritması ile Akıllı Yatırım</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Sol Panel - Parametreler -->
+            <div class="panel settings-panel">
+                <h2>Optimizasyon Parametreleri</h2>
+
+                <!-- Hisse Seçimi -->
+                <div class="section">
+                    <h3>Hisse Seçimi</h3>
+                    <div class="stock-selection">
+                        <div class="select-buttons">
+                            <button id="selectAll" class="btn btn-secondary">Tümünü Seç</button>
+                            <button id="clearAll" class="btn btn-secondary">Temizle</button>
+                        </div>
+                        <div id="stockList" class="stock-list">
+                            <!-- JavaScript ile doldurulacak -->
+                        </div>
+                        <div class="selected-count">
+                            Seçili: <span id="selectedCount">0</span> hisse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Optimizasyon Ayarları -->
+                <div class="section">
+                    <h3>Optimizasyon Ayarları</h3>
+
+                    <div class="form-group">
+                        <label for="objective">Amaç Fonksiyonu:</label>
+                        <select id="objective" class="form-control">
+                            <option value="sharpe">Sharpe Ratio (Risk-Getiri Dengesi)</option>
+                            <option value="max_return">Maksimum Getiri</option>
+                            <option value="min_variance">Minimum Risk</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="period">Veri Periyodu:</label>
+                        <select id="period" class="form-control">
+                            <option value="6mo">6 Ay</option>
+                            <option value="1y" selected>1 Yıl</option>
+                            <option value="2y">2 Yıl</option>
+                            <option value="5y">5 Yıl</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="colonySize">Koloni Büyüklüğü:</label>
+                        <input type="number" id="colonySize" class="form-control"
+                               value="50" min="20" max="200" step="10">
+                        <small>Daha büyük koloni = daha iyi sonuç, daha uzun süre</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maxIterations">Maksimum İterasyon:</label>
+                        <input type="number" id="maxIterations" class="form-control"
+                               value="100" min="50" max="500" step="10">
+                        <small>Daha fazla iterasyon = daha iyi yakınsama</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="minWeight">Min Hisse Ağırlığı (%):</label>
+                        <input type="number" id="minWeight" class="form-control"
+                               value="0" min="0" max="10" step="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maxWeight">Maks Hisse Ağırlığı (%):</label>
+                        <input type="number" id="maxWeight" class="form-control"
+                               value="50" min="10" max="100" step="5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="riskFreeRate">Risksiz Faiz Oranı (%):</label>
+                        <input type="number" id="riskFreeRate" class="form-control"
+                               value="10" min="0" max="50" step="1">
+                        <small>Türkiye için genellikle %10-40 arası</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="investmentAmount">Yatırım Tutarı (₺):</label>
+                        <input type="number" id="investmentAmount" class="form-control"
+                               value="100000" min="1000" max="10000000" step="1000">
+                        <small>Portföye yatırmak istediğiniz toplam tutar</small>
+                    </div>
+                </div>
+
+                <!-- Optimizasyon Butonu -->
+                <button id="optimizeBtn" class="btn btn-primary btn-large">
+                    Optimizasyonu Başlat
+                </button>
+            </div>
+
+            <!-- Sağ Panel - Sonuçlar -->
+            <div class="panel results-panel">
+                <h2>Optimizasyon Sonuçları</h2>
+
+                <!-- İlerleme -->
+                <div id="progressSection" class="section hidden">
+                    <div class="progress-container">
+                        <div class="spinner"></div>
+                        <p id="progressText">Optimizasyon çalışıyor...</p>
+                    </div>
+                </div>
+
+                <!-- Sonuçlar -->
+                <div id="resultsSection" class="section hidden">
+                    <!-- Özet Metrikler -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Toplam Yatırım</div>
+                            <div class="metric-value" id="totalInvestment">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Beklenen Getiri</div>
+                            <div class="metric-value" id="expectedReturn">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Volatilite (Risk)</div>
+                            <div class="metric-value" id="volatility">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Sharpe Ratio</div>
+                            <div class="metric-value" id="sharpeRatio">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Sortino Ratio</div>
+                            <div class="metric-value" id="sortinoRatio">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Max Drawdown</div>
+                            <div class="metric-value" id="maxDrawdown">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Çeşitlendirme</div>
+                            <div class="metric-value" id="diversification">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Hisse Sayısı</div>
+                            <div class="metric-value" id="stockCount">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Portföy Ağırlıkları -->
+                    <div class="subsection">
+                        <h3>Optimal Portföy Dağılımı</h3>
+                        <div id="weightsChart"></div>
+                    </div>
+
+                    <!-- Ağırlık Tablosu -->
+                    <div class="subsection">
+                        <h3>Detaylı Ağırlıklar</h3>
+                        <div id="weightsTable"></div>
+                    </div>
+
+                    <!-- Yakınsama Grafiği -->
+                    <div class="subsection">
+                        <h3>Algoritma Yakınsama Grafiği</h3>
+                        <div id="convergenceChart"></div>
+                    </div>
+                </div>
+
+                <!-- Başlangıç Mesajı -->
+                <div id="initialMessage" class="initial-message">
+                    <div class="info-icon">&#9432;</div>
+                    <p>Hisse seçin ve parametreleri ayarlayın, ardından optimizasyonu başlatın.</p>
+                    <div class="features">
+                        <h4>Özellikler:</h4>
+                        <ul>
+                            <li>Yapay Arı Kolonisi algoritması ile global optimizasyon</li>
+                            <li>Sharpe Ratio maksimizasyonu</li>
+                            <li>Çeşitlendirilmiş portföy önerileri</li>
+                            <li>Risk-getiri analizi</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>BIST100 Portföy Optimizasyonu - Yapay Arı Kolonisi Algoritması</p>
+            <p class="disclaimer">
+                <strong>Uyarı:</strong> Bu uygulama sadece eğitim amaçlıdır.
+                Yatırım kararları almadan önce profesyonel danışmanlık alınız.
+            </p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

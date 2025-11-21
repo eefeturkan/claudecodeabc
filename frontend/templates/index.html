@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BIST100 Portföy Optimizasyonu - ABC Algoritması</title>
+    <title>BIST100 Akıllı Portföy Danışmanı - ABC Algoritması</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 </head>
@@ -11,87 +11,104 @@
     <div class="container">
         <!-- Header -->
         <header>
-            <h1>BIST100 Portföy Optimizasyonu</h1>
-            <p class="subtitle">Yapay Arı Kolonisi Algoritması ile Akıllı Yatırım</p>
+            <h1>BIST100 Akıllı Portföy Danışmanı</h1>
+            <p class="subtitle">Yapay Arı Kolonisi Algoritması ile Kişiselleştirilmiş Yatırım Önerileri</p>
         </header>
 
         <!-- Main Content -->
         <div class="content">
-            <!-- Sol Panel - Parametreler -->
+            <!-- Sol Panel - Kullanıcı Tercihleri -->
             <div class="panel settings-panel">
-                <h2>Optimizasyon Parametreleri</h2>
+                <h2>Yatırım Tercihleriniz</h2>
 
-                <!-- Hisse Seçimi -->
+                <!-- Risk Profili -->
                 <div class="section">
-                    <h3>Hisse Seçimi</h3>
-                    <div class="stock-selection">
-                        <div class="select-buttons">
-                            <button id="selectAll" class="btn btn-secondary">Tümünü Seç</button>
-                            <button id="clearAll" class="btn btn-secondary">Temizle</button>
-                        </div>
-                        <div id="stockList" class="stock-list">
-                            <!-- JavaScript ile doldurulacak -->
-                        </div>
-                        <div class="selected-count">
-                            Seçili: <span id="selectedCount">0</span> hisse
+                    <h3>1. Risk Profiliniz</h3>
+                    <div class="form-group">
+                        <label>Ne kadar risk almak istersiniz?</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="riskProfile" value="düşük">
+                                <span class="radio-label">
+                                    <strong>Düşük Risk</strong>
+                                    <small>Kararlı gelir, düşük volatilite</small>
+                                </span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="riskProfile" value="orta" checked>
+                                <span class="radio-label">
+                                    <strong>Orta Risk</strong>
+                                    <small>Dengeli risk-getiri yaklaşımı</small>
+                                </span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="riskProfile" value="yüksek">
+                                <span class="radio-label">
+                                    <strong>Yüksek Risk</strong>
+                                    <small>Yüksek getiri potansiyeli</small>
+                                </span>
+                            </label>
                         </div>
                     </div>
                 </div>
 
-                <!-- Optimizasyon Ayarları -->
+                <!-- Yatırım Süresi -->
                 <div class="section">
-                    <h3>Optimizasyon Ayarları</h3>
+                    <h3>2. Yatırım Süreniz</h3>
+                    <div class="form-group">
+                        <label>Ne kadar süre yatırım yapmayı planlıyorsunuz?</label>
+                        <small class="info-text">Not: Seçtiğiniz süre kadar geçmiş hisse verisi analiz edilir (örn: 1 yıl seçerseniz, son 1 yılın fiyat hareketleri kullanılır)</small>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="investmentPeriod" value="kısa">
+                                <span class="radio-label">
+                                    <strong>Kısa Vade</strong>
+                                    <small>6 ay geçmiş veri - Kısa vadeli fırsatlar</small>
+                                </span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="investmentPeriod" value="orta" checked>
+                                <span class="radio-label">
+                                    <strong>Orta Vade</strong>
+                                    <small>1 yıl geçmiş veri - Dengeli yaklaşım</small>
+                                </span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="investmentPeriod" value="uzun">
+                                <span class="radio-label">
+                                    <strong>Uzun Vade</strong>
+                                    <small>5 yıl geçmiş veri - Uzun vadeli büyüme</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sektör Tercihleri -->
+                <div class="section">
+                    <h3>3. Sektör Tercihleri (Opsiyonel)</h3>
+                    <div class="form-group">
+                        <label>Hangi sektörlere yatırım yapmak istersiniz?</label>
+                        <small class="info-text">Hiçbir sektör seçmezseniz, risk profilinize uygun tüm sektörler kullanılır.</small>
+                        <div id="sectorSelection" class="checkbox-group">
+                            <!-- JavaScript ile doldurulacak -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portföy Ayarları -->
+                <div class="section">
+                    <h3>4. Portföy Ayarları</h3>
 
                     <div class="form-group">
-                        <label for="objective">Amaç Fonksiyonu:</label>
-                        <select id="objective" class="form-control">
-                            <option value="sharpe">Sharpe Ratio (Risk-Getiri Dengesi)</option>
-                            <option value="max_return">Maksimum Getiri</option>
-                            <option value="min_variance">Minimum Risk</option>
+                        <label for="maxStocks">Maksimum Hisse Sayısı:</label>
+                        <select id="maxStocks" class="form-control">
+                            <option value="5">5 Hisse (Konsantre portföy)</option>
+                            <option value="10" selected>10 Hisse (Dengeli - Önerilen)</option>
+                            <option value="15">15 Hisse (İyi çeşitlendirme)</option>
+                            <option value="20">20 Hisse (Maksimum çeşitlendirme)</option>
                         </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="period">Veri Periyodu:</label>
-                        <select id="period" class="form-control">
-                            <option value="6mo">6 Ay</option>
-                            <option value="1y" selected>1 Yıl</option>
-                            <option value="2y">2 Yıl</option>
-                            <option value="5y">5 Yıl</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="colonySize">Koloni Büyüklüğü:</label>
-                        <input type="number" id="colonySize" class="form-control"
-                               value="50" min="20" max="200" step="10">
-                        <small>Daha büyük koloni = daha iyi sonuç, daha uzun süre</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="maxIterations">Maksimum İterasyon:</label>
-                        <input type="number" id="maxIterations" class="form-control"
-                               value="100" min="50" max="500" step="10">
-                        <small>Daha fazla iterasyon = daha iyi yakınsama</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="minWeight">Min Hisse Ağırlığı (%):</label>
-                        <input type="number" id="minWeight" class="form-control"
-                               value="0" min="0" max="10" step="1">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="maxWeight">Maks Hisse Ağırlığı (%):</label>
-                        <input type="number" id="maxWeight" class="form-control"
-                               value="50" min="10" max="100" step="5">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="riskFreeRate">Risksiz Faiz Oranı (%):</label>
-                        <input type="number" id="riskFreeRate" class="form-control"
-                               value="10" min="0" max="50" step="1">
-                        <small>Türkiye için genellikle %10-40 arası</small>
+                        <small>Daha fazla hisse = daha iyi çeşitlendirme ve risk dağılımı</small>
                     </div>
 
                     <div class="form-group">
@@ -102,93 +119,370 @@
                     </div>
                 </div>
 
+                <!-- Gelişmiş Ayarlar (Collapse) -->
+                <div class="section">
+                    <h3 class="collapsible" id="advancedToggle">5. Gelişmiş Ayarlar (Opsiyonel) ▼</h3>
+                    <div id="advancedSettings" class="hidden">
+                        <div class="form-group">
+                            <label for="colonySize">Koloni Büyüklüğü:</label>
+                            <input type="number" id="colonySize" class="form-control"
+                                   value="50" min="20" max="200" step="10">
+                            <small>Daha büyük = daha iyi sonuç, daha uzun süre</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxIterations">Maksimum İterasyon:</label>
+                            <input type="number" id="maxIterations" class="form-control"
+                                   value="100" min="50" max="500" step="10">
+                            <small>Algoritma yakınsama sayısı</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="minWeight">Min Hisse Ağırlığı (%):</label>
+                            <input type="number" id="minWeight" class="form-control"
+                                   value="0" min="0" max="10" step="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxWeight">Maks Hisse Ağırlığı (%):</label>
+                            <input type="number" id="maxWeight" class="form-control"
+                                   value="30" min="10" max="100" step="5">
+                            <small>Tek bir hissenin alabileceği maksimum ağırlık (çeşitlendirme için düşük tutun)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="riskFreeRate">Risksiz Faiz Oranı (%):</label>
+                            <input type="number" id="riskFreeRate" class="form-control"
+                                   value="45" min="0" max="100" step="1">
+                            <small>Türkiye için güncel hazine faiz oranı</small>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Optimizasyon Butonu -->
-                <button id="optimizeBtn" class="btn btn-primary btn-large">
-                    Optimizasyonu Başlat
+                <button id="analyzeBtn" class="btn btn-primary btn-large">
+                    Portföy Önerisi Al
                 </button>
             </div>
 
             <!-- Sağ Panel - Sonuçlar -->
             <div class="panel results-panel">
-                <h2>Optimizasyon Sonuçları</h2>
+                <h2>Portföy Öneriniz</h2>
 
                 <!-- İlerleme -->
                 <div id="progressSection" class="section hidden">
                     <div class="progress-container">
                         <div class="spinner"></div>
-                        <p id="progressText">Optimizasyon çalışıyor...</p>
+                        <p id="progressText">Portföyünüz hazırlanıyor...</p>
                     </div>
                 </div>
 
                 <!-- Sonuçlar -->
                 <div id="resultsSection" class="section hidden">
+                    <!-- Öneri Özeti -->
+                    <div class="recommendation-summary">
+                        <h3>Sizin İçin Seçilen Hisseler</h3>
+                        <div id="recommendedStocks" class="stocks-list"></div>
+                    </div>
+
                     <!-- Özet Metrikler -->
                     <div class="metrics-grid">
                         <div class="metric-card">
-                            <div class="metric-label">Toplam Yatırım</div>
+                            <div class="metric-label">
+                                Toplam Yatırım
+                            </div>
                             <div class="metric-value" id="totalInvestment">-</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">Beklenen Getiri</div>
+                            <span class="tooltip-icon" data-tooltip="Portföyünüzün yıllık beklenen getirisi. Geçmiş performansa dayanır, gelecek garantisi değildir.">?</span>
                             <div class="metric-value" id="expectedReturn">-</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">Volatilite (Risk)</div>
+                            <span class="tooltip-icon" data-tooltip="Portföy değerindeki dalgalanma miktarı. Yüksek volatilite = daha fazla iniş-çıkış, daha fazla risk.">?</span>
                             <div class="metric-value" id="volatility">-</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">Sharpe Ratio</div>
+                            <span class="tooltip-icon" data-tooltip="Risk-ayarlı getiri ölçütü. Yüksek değer = risksiz faize göre daha iyi performans. >1 mükemmel, >0 iyi, <0 kötü.">?</span>
                             <div class="metric-value" id="sharpeRatio">-</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">Sortino Ratio</div>
+                            <span class="tooltip-icon" data-tooltip="Sharpe'a benzer ama sadece aşağı yönlü riski ölçer. Kazançlar cezalandırılmaz, sadece kayıplar.">?</span>
                             <div class="metric-value" id="sortinoRatio">-</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">Max Drawdown</div>
+                            <span class="tooltip-icon" data-tooltip="Portföyün en büyük zirveden düşüş yüzdesi. Örn: -20% = En kötü dönemde portföyünüz %20 değer kaybetti.">?</span>
                             <div class="metric-value" id="maxDrawdown">-</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-label">Çeşitlendirme</div>
+                            <span class="tooltip-icon" data-tooltip="Portföy çeşitlendirme oranı. >1.5 mükemmel, >1.2 iyi. Yüksek değer = riskler daha iyi dağıtılmış.">?</span>
                             <div class="metric-value" id="diversification">-</div>
                         </div>
                         <div class="metric-card">
-                            <div class="metric-label">Hisse Sayısı</div>
+                            <div class="metric-label">Portföydeki Hisse</div>
                             <div class="metric-value" id="stockCount">-</div>
                         </div>
                     </div>
 
+                    <!-- Sektör Dağılımı -->
+                    <div class="subsection">
+                        <h3>Sektör Dağılımı</h3>
+                        <div id="sectorChart"></div>
+                    </div>
+
                     <!-- Portföy Ağırlıkları -->
                     <div class="subsection">
-                        <h3>Optimal Portföy Dağılımı</h3>
+                        <h3>Hisse Dağılımı</h3>
                         <div id="weightsChart"></div>
                     </div>
 
                     <!-- Ağırlık Tablosu -->
                     <div class="subsection">
-                        <h3>Detaylı Ağırlıklar</h3>
+                        <h3>Detaylı Yatırım Planı</h3>
                         <div id="weightsTable"></div>
                     </div>
 
                     <!-- Yakınsama Grafiği -->
                     <div class="subsection">
-                        <h3>Algoritma Yakınsama Grafiği</h3>
+                        <h3>Optimizasyon Süreci</h3>
                         <div id="convergenceChart"></div>
                     </div>
                 </div>
 
                 <!-- Başlangıç Mesajı -->
                 <div id="initialMessage" class="initial-message">
-                    <div class="info-icon">&#9432;</div>
-                    <p>Hisse seçin ve parametreleri ayarlayın, ardından optimizasyonu başlatın.</p>
-                    <div class="features">
-                        <h4>Özellikler:</h4>
+                    <div class="welcome-header">
+                        <div class="welcome-icon">🎯</div>
+                        <h2>Akıllı Portföy Optimizasyonu</h2>
+                        <p class="welcome-subtitle">Yapay Arı Kolonisi algoritması ile bilimsel portföy yönetimi</p>
+                    </div>
+
+                    <!-- Nasıl Çalışır - Adım Adım -->
+                    <div class="how-it-works">
+                        <h3 class="section-title">⚙️ Sistem Nasıl Çalışır?</h3>
+
+                        <div class="steps-container">
+                            <!-- Adım 1 -->
+                            <div class="step-card">
+                                <div class="step-number">1</div>
+                                <div class="step-icon">👤</div>
+                                <h4>Tercihlerinizi Belirleyin</h4>
+                                <p>Risk profilinizi, yatırım sürenizi ve ilgilendiğiniz sektörleri seçin</p>
+                                <div class="step-tags">
+                                    <span class="tag">Risk Profili</span>
+                                    <span class="tag">Yatırım Süresi</span>
+                                    <span class="tag">Sektörler</span>
+                                </div>
+                            </div>
+
+                            <div class="step-arrow">→</div>
+
+                            <!-- Adım 2 -->
+                            <div class="step-card">
+                                <div class="step-number">2</div>
+                                <div class="step-icon">🔍</div>
+                                <h4>Hisse Filtreleme</h4>
+                                <p>283 BIST hissesi arasından tercihlerinize uygun olanlar seçilir</p>
+                                <div class="step-stats">
+                                    <div class="stat">
+                                        <span class="stat-value">283</span>
+                                        <span class="stat-label">Hisse Havuzu</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-value">20+</span>
+                                        <span class="stat-label">Sektör</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-arrow">→</div>
+
+                            <!-- Adım 3 -->
+                            <div class="step-card">
+                                <div class="step-number">3</div>
+                                <div class="step-icon">🐝</div>
+                                <h4>ABC Optimizasyonu</h4>
+                                <p>Yapay arılar en iyi portföy dağılımını bulur</p>
+                                <div class="step-process">
+                                    <div class="process-item">
+                                        <span class="bee-emoji">🐝</span>
+                                        <span>Employee Bees</span>
+                                    </div>
+                                    <div class="process-item">
+                                        <span class="bee-emoji">👁️</span>
+                                        <span>Onlooker Bees</span>
+                                    </div>
+                                    <div class="process-item">
+                                        <span class="bee-emoji">🔭</span>
+                                        <span>Scout Bees</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-arrow">→</div>
+
+                            <!-- Adım 4 -->
+                            <div class="step-card">
+                                <div class="step-number">4</div>
+                                <div class="step-icon">📊</div>
+                                <h4>Sonuçlar & Analiz</h4>
+                                <p>Optimal portföyünüz ve detaylı performans metrikleri</p>
+                                <div class="step-metrics">
+                                    <span class="metric-badge">Getiri</span>
+                                    <span class="metric-badge">Risk</span>
+                                    <span class="metric-badge">Sharpe</span>
+                                    <span class="metric-badge">Diversifikasyon</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Özellikler -->
+                    <div class="features-grid">
+                        <h3 class="section-title">✨ Sistem Özellikleri</h3>
+
+                        <div class="feature-cards">
+                            <div class="feature-card">
+                                <div class="feature-icon">🎯</div>
+                                <h4>Sharpe Ratio Optimizasyonu</h4>
+                                <p>Risk-getiri dengesini maksimize eden bilimsel yaklaşım</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🛡️</div>
+                                <h4>Risk Yönetimi</h4>
+                                <p>Volatilite, Max Drawdown ve VaR ile kapsamlı risk analizi</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">🌐</div>
+                                <h4>Sektörel Çeşitlendirme</h4>
+                                <p>20+ sektöre yayılmış dengeli portföy dağılımı</p>
+                            </div>
+
+                            <div class="feature-card">
+                                <div class="feature-icon">📈</div>
+                                <h4>Gerçek Zamanlı Veri</h4>
+                                <p>Yahoo Finance'ten güncel piyasa verileri</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Butonu -->
+                    <div class="cta-section">
+                        <p class="cta-text">Hazır mısınız? Soldaki formu doldurup başlayın! 👈</p>
+                        <div class="cta-arrow">⬅️</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bilgi Paneli -->
+        <div class="info-panel">
+            <button class="info-panel-toggle" id="infoPanelToggle">
+                📚 Portföy Metriklerini Anlamak
+                <span class="toggle-arrow">▼</span>
+            </button>
+            <div class="info-panel-content hidden" id="infoPanelContent">
+                <div class="info-sections">
+                    <!-- Beklenen Getiri -->
+                    <div class="info-section">
+                        <h3>📈 Beklenen Getiri (Expected Return)</h3>
+                        <p><strong>Ne anlama gelir?</strong> Portföyünüzün bir yıl sonunda ortalama ne kadar kazanç sağlaması beklendiğini gösterir.</p>
+                        <p><strong>Nasıl hesaplanır?</strong> Seçilen hisselerin geçmiş performanslarının ağırlıklı ortalaması alınır ve yıllık getiriye dönüştürülür.</p>
+                        <div class="info-example">
+                            <strong>Örnek:</strong> %50 beklenen getiri → 100,000 TL yatırım yaparsanız, 1 yıl sonra ortalama 150,000 TL olması beklenir.
+                        </div>
+                        <p class="info-warning">⚠️ <strong>Önemli:</strong> Bu bir tahmindir, garanti değildir. Gerçek getiri piyasa koşullarına göre değişir.</p>
+                    </div>
+
+                    <!-- Volatilite -->
+                    <div class="info-section">
+                        <h3>📊 Volatilite (Risk/Volatility)</h3>
+                        <p><strong>Ne anlama gelir?</strong> Portföy değerindeki dalgalanma miktarı. Yüksek volatilite = yüksek belirsizlik ve risk.</p>
+                        <p><strong>Nasıl yorumlanır?</strong></p>
                         <ul>
-                            <li>Yapay Arı Kolonisi algoritması ile global optimizasyon</li>
-                            <li>Sharpe Ratio maksimizasyonu</li>
-                            <li>Çeşitlendirilmiş portföy önerileri</li>
-                            <li>Risk-getiri analizi</li>
+                            <li><strong>%10-20:</strong> Düşük risk - Stabil, az dalgalanma</li>
+                            <li><strong>%20-35:</strong> Orta risk - Dengeli dalgalanma</li>
+                            <li><strong>%35+:</strong> Yüksek risk - Çok fazla iniş-çıkış</li>
                         </ul>
+                        <div class="info-example">
+                            <strong>Örnek:</strong> %30 volatilite → Portföyünüz bir yıl içinde günlük ortalama %2-3 değer değiştirebilir. 100,000 TL → Bir gün 97,000 TL, ertesi gün 103,000 TL olabilir.
+                        </div>
+                    </div>
+
+                    <!-- Sharpe Ratio -->
+                    <div class="info-section">
+                        <h3>⚖️ Sharpe Ratio</h3>
+                        <p><strong>Ne anlama gelir?</strong> Aldığınız risk karşılığında ne kadar ekstra getiri elde ettiğinizi ölçer.</p>
+                        <p><strong>Formül:</strong> (Portföy Getirisi - Risksiz Faiz) ÷ Volatilite</p>
+                        <p><strong>Nasıl yorumlanır?</strong></p>
+                        <ul>
+                            <li><strong>> 1.0:</strong> Mükemmel - Risk almaya değer</li>
+                            <li><strong>0.5 - 1.0:</strong> İyi - Kabul edilebilir</li>
+                            <li><strong>0 - 0.5:</strong> Orta - Marjinal</li>
+                            <li><strong>< 0:</strong> Kötü - Risksiz faizden daha az kazanç</li>
+                        </ul>
+                        <div class="info-example">
+                            <strong>Örnek:</strong> Sharpe = 0.7 → Her %1 risk için %0.7 ekstra getiri alıyorsunuz (risksiz faiz üzerinde).
+                        </div>
+                    </div>
+
+                    <!-- Sortino Ratio -->
+                    <div class="info-section">
+                        <h3>📉 Sortino Ratio</h3>
+                        <p><strong>Ne anlama gelir?</strong> Sharpe Ratio'ya benzer ama sadece <strong>aşağı yönlü riski</strong> ölçer.</p>
+                        <p><strong>Farkı nedir?</strong> Sharpe tüm dalgalanmaları cezalandırır, Sortino sadece kayıpları cezalandırır. Kazançları "risk" olarak görmez.</p>
+                        <p><strong>Neden önemli?</strong> Yatırımcılar yukarı dalgalanmalardan şikayetçi olmaz, sadece düşüşlerden.</p>
+                        <div class="info-example">
+                            <strong>Örnek:</strong> Sortino > Sharpe → Portföyünüz yukarı çok, aşağı az hareket ediyor (iyi haber!).
+                        </div>
+                    </div>
+
+                    <!-- Max Drawdown -->
+                    <div class="info-section">
+                        <h3>⬇️ Max Drawdown</h3>
+                        <p><strong>Ne anlama gelir?</strong> Portföyünüzün en yüksek noktasından en düşük noktasına kadar olan maksimum düşüş yüzdesi.</p>
+                        <p><strong>Nasıl yorumlanır?</strong></p>
+                        <ul>
+                            <li><strong>-10% ve üstü:</strong> Düşük risk - Az düşüş</li>
+                            <li><strong>-20% civarı:</strong> Orta risk - Kabul edilebilir</li>
+                            <li><strong>-35% ve altı:</strong> Yüksek risk - Büyük düşüş</li>
+                        </ul>
+                        <div class="info-example">
+                            <strong>Örnek:</strong> -25% Max Drawdown → En kötü dönemde 100,000 TL yatırımınız 75,000 TL'ye düştü. Buna dayanabilir misiniz?
+                        </div>
+                        <p class="info-warning">⚠️ <strong>Psikolojik Test:</strong> Bu düşüşü gördüğünüzde panik satış yapar mısınız? Yüksek drawdown = güçlü sinir gerektirir!</p>
+                    </div>
+
+                    <!-- Çeşitlendirme -->
+                    <div class="info-section">
+                        <h3>🎯 Çeşitlendirme Oranı (Diversification Ratio)</h3>
+                        <p><strong>Ne anlama gelir?</strong> Portföyünüzdeki hisselerin risklerinin ne kadar iyi dağıtıldığını ölçer.</p>
+                        <p><strong>Nasıl yorumlanır?</strong></p>
+                        <ul>
+                            <li><strong>> 1.5:</strong> Mükemmel - Çok iyi çeşitlendirilmiş</li>
+                            <li><strong>1.2 - 1.5:</strong> İyi - Kabul edilebilir</li>
+                            <li><strong>< 1.2:</strong> Zayıf - Daha fazla çeşitlendirme gerekli</li>
+                        </ul>
+                        <div class="info-example">
+                            <strong>Örnek:</strong> 1.6 oran → Portföyünüzdeki hisseler birbirleriyle düşük korelasyonlu, biri düşerken diğeri yükselebilir. Risk dağıtılmış!
+                        </div>
+                        <p><strong>Altın Kural:</strong> "Tüm yumurtalarını bir sepete koyma!" - Çeşitlendirme riski azaltır.</p>
+                    </div>
+
+                    <!-- Risk Profili Açıklaması -->
+                    <div class="info-section">
+                        <h3>🎭 Risk Profilleri Nasıl Seçilir?</h3>
+                        <p><strong>Düşük Risk:</strong> Emekliler, kısa vadede paraya ihtiyacı olanlar, stresten kaçınanlar için. Banka/Gıda gibi stabil sektörler.</p>
+                        <p><strong>Orta Risk:</strong> Dengeli yaklaşım isteyenler için. Çeşitli sektörler, makul getiri-risk dengesi.</p>
+                        <p><strong>Yüksek Risk:</strong> Genç, uzun vadeli yatırımcılar için. Teknoloji/Savunma gibi volatil ama yüksek potansiyelli sektörler.</p>
+                        <p class="info-warning">⚠️ <strong>Dikkat:</strong> Yüksek risk ≠ Daha fazla kazanç garantisi. Daha fazla dalgalanma = daha fazla stres!</p>
                     </div>
                 </div>
             </div>
@@ -196,7 +490,7 @@
 
         <!-- Footer -->
         <footer>
-            <p>BIST100 Portföy Optimizasyonu - Yapay Arı Kolonisi Algoritması</p>
+            <p>BIST100 Akıllı Portföy Danışmanı - Yapay Arı Kolonisi Algoritması</p>
             <p class="disclaimer">
                 <strong>Uyarı:</strong> Bu uygulama sadece eğitim amaçlıdır.
                 Yatırım kararları almadan önce profesyonel danışmanlık alınız.
@@ -204,6 +498,6 @@
         </footer>
     </div>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main_new.js') }}"></script>
 </body>
 </html>

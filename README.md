@@ -1,8 +1,15 @@
-# BIST100 Portföy Optimizasyonu - Yapay Arı Kolonisi
+# BIST100 Akıllı Portföy Danışmanı - Yapay Arı Kolonisi
 
-BIST100 hisse senetleri için Yapay Arı Kolonisi (Artificial Bee Colony - ABC) algoritması kullanarak optimal portföy dağılımı hesaplayan web uygulaması.
+BIST100 hisse senetleri için Yapay Arı Kolonisi (Artificial Bee Colony - ABC) algoritması kullanarak kişiselleştirilmiş portföy önerileri sunan akıllı yatırım danışmanı.
 
 ## Özellikler
+
+### Kişiselleştirilmiş Öneri Sistemi
+- **Otomatik Hisse Seçimi**: Risk profilinize ve tercihlerinize göre otomatik hisse önerisi
+- **Risk Profilleme**: Düşük, Orta, Yüksek risk seviyeleri
+- **Yatırım Süresi Optimizasyonu**: Kısa, Orta, Uzun vade stratejileri
+- **Sektörel Filtreleme**: 15+ farklı sektör bazlı tercih sistemi
+- **Akıllı Çeşitlendirme**: Sektörel dengeli hisse dağılımı
 
 ### Yapay Arı Kolonisi Algoritması
 - **Employee Bees (İşçi Arılar)**: Mevcut çözümleri araştırır
@@ -16,11 +23,11 @@ BIST100 hisse senetleri için Yapay Arı Kolonisi (Artificial Bee Colony - ABC) 
 - Minimum/Maksimum hisse ağırlık kısıtlamaları
 - Yahoo Finance'ten gerçek zamanlı veri çekme
 
-### Web Arayüzü
-- Kullanıcı dostu modern tasarım
+### Modern Web Arayüzü
+- Kullanıcı dostu tercih toplama ekranı
 - İnteraktif grafikler (Plotly.js)
 - Gerçek zamanlı optimizasyon sonuçları
-- Pasta grafik ve tablo görünümleri
+- Pasta grafik ve detaylı tablo görünümleri
 
 ## Proje Yapısı
 
@@ -33,13 +40,14 @@ bist100-abc-portfolio/
 │   ├── bist100_stocks.py        # BIST100 hisse listesi
 │   ├── data_fetcher.py          # Yahoo Finance veri çekme
 │   ├── metrics.py               # Portföy metrikleri
-│   └── portfolio_optimizer.py   # ABC ile portföy optimizasyonu
+│   ├── portfolio_optimizer.py   # ABC ile portföy optimizasyonu
+│   └── stock_classifier.py      # Sektör sınıflandırma ve öneri motoru
 ├── frontend/
 │   ├── static/
 │   │   ├── css/style.css        # Stil dosyası
 │   │   └── js/main.js           # Frontend JavaScript
 │   └── templates/
-│       └── index.html           # Ana sayfa
+│       └── index.html           # Ana sayfa (tercih bazlı)
 ├── requirements.txt             # Python bağımlılıkları
 ├── test_optimizer.py            # Test scripti
 └── README.md
@@ -70,19 +78,32 @@ http://localhost:5000
 
 ### Web Arayüzü Üzerinden
 
-1. **Hisse Seçimi**: BIST100 hisselerinden en az 2 tanesini seçin
-2. **Parametreleri Ayarlayın**:
-   - Amaç fonksiyonu (Sharpe, Max Getiri, Min Risk)
-   - Veri periyodu (6 ay, 1 yıl, 2 yıl, 5 yıl)
-   - Koloni büyüklüğü (20-200)
-   - Maksimum iterasyon (50-500)
-   - Min/Max hisse ağırlıkları
-   - Risksiz faiz oranı
-3. **Optimizasyonu Başlatın**: "Optimizasyonu Başlat" butonuna tıklayın
-4. **Sonuçları İnceleyin**:
+1. **Risk Profilinizi Seçin**:
+   - Düşük Risk: Kararlı gelir, düşük volatilite
+   - Orta Risk: Dengeli risk-getiri yaklaşımı
+   - Yüksek Risk: Yüksek getiri potansiyeli
+
+2. **Yatırım Sürenizi Belirleyin**:
+   - Kısa Vade: 6 ay
+   - Orta Vade: 1 yıl
+   - Uzun Vade: 5 yıl
+
+3. **Sektör Tercihlerinizi Seçin** (Opsiyonel):
+   - Bankacılık, Teknoloji, Enerji, Perakende vb.
+   - Boş bırakırsanız risk profilinize uygun tüm sektörler kullanılır
+
+4. **Portföy Ayarları**:
+   - Maksimum hisse sayısı (5/10/15/20)
+   - Yatırım tutarı (TL)
+
+5. **Portföy Önerisi Al**: "Portföy Önerisi Al" butonuna tıklayın
+
+6. **Sonuçları İnceleyin**:
+   - Sizin için seçilen hisseler
+   - Optimal portföy dağılımı
    - Portföy metrikleri
-   - Optimal ağırlık dağılımı
-   - Yakınsama grafiği
+   - Detaylı yatırım planı
+   - Algoritma yakınsama grafiği
 
 ### Python Scripti ile Test
 
@@ -92,34 +113,69 @@ python test_optimizer.py
 
 ## API Endpoints
 
-### GET /api/stocks
-BIST100 hisse listesini döndürür.
+### GET /api/sectors
+Mevcut sektör listesini döndürür.
 
 **Response:**
 ```json
 {
   "success": true,
-  "stocks": [
-    {"symbol": "AKBNK", "name": "Akbank"},
-    ...
-  ]
+  "sectors": ["Bankacılık", "Teknoloji", "Enerji", ...]
 }
 ```
 
-### POST /api/optimize
-Portföy optimizasyonunu çalıştırır.
+### GET /api/preferences
+Risk profilleri ve yatırım periyotları hakkında bilgi.
+
+**Response:**
+```json
+{
+  "success": true,
+  "risk_profiles": {...},
+  "investment_periods": {...}
+}
+```
+
+### POST /api/recommend
+Kullanıcı tercihlerine göre hisse önerir.
 
 **Request:**
 ```json
 {
-  "symbols": ["AKBNK", "GARAN", "THYAO"],
-  "period": "1y",
-  "objective": "sharpe",
+  "risk_profile": "orta",
+  "investment_period": "orta",
+  "sectors": ["Teknoloji", "Bankacılık"],
+  "max_stocks": 10
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "recommendation": {
+    "recommended_stocks": ["AKBNK", "GARAN", ...],
+    "stock_count": 10
+  }
+}
+```
+
+### POST /api/optimize-with-preferences
+Kullanıcı tercihlerine göre hisse önerir VE portföy optimizasyonu yapar.
+
+**Request:**
+```json
+{
+  "risk_profile": "orta",
+  "investment_period": "orta",
+  "sectors": ["Teknoloji", "Bankacılık"],
+  "max_stocks": 10,
   "colony_size": 50,
   "max_iterations": 100,
   "min_weight": 0.0,
   "max_weight": 0.5,
-  "risk_free_rate": 0.10
+  "risk_free_rate": 0.10,
+  "investment_amount": 100000
 }
 ```
 
