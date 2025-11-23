@@ -224,7 +224,7 @@ BIST100_STOCKS = {
     'TCELL': 'Turkcell',
     'TDGYO': 'Tad GYO',
     'TEZOL': 'Tezol',
-    'TGSAS': 'Tüpraş',
+    'TGSAS': 'TGS',
     'THYAO': 'Türk Hava Yolları',
     'TIRE': 'Tire Kutsan',
     'TKFEN': 'Tekfen Holding',

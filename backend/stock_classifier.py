@@ -76,7 +76,7 @@ STOCK_SECTORS = {
     'AKFYE': 'Enerji',
     'ENJSA': 'Enerji',
     'TUPRS': 'Enerji',
-    'TGSAS': 'Enerji',
+    'TGSAS': 'Ticaret',
     'PETKM': 'Enerji',
     'AYGAZ': 'Enerji',
     'ODAS': 'Enerji',
@@ -361,20 +361,22 @@ STOCK_SECTORS = {
 }
 
 # Risk Profilleri (volatilite bazlı)
+# NOT: BIST gelismekte olan piyasa oldugu icin volatilite esikleri
+# gelismis piyasalara gore daha yuksek tutulmustur
 RISK_PROFILES = {
     'düşük': {
         'sectors': ['Bankacılık', 'Gıda', 'Perakende', 'Holding', 'Sigorta'],
-        'volatility_threshold': 0.30,
+        'volatility_threshold': 0.45,  # %45 - BIST icin gercekci dusuk risk esigi
         'description': 'Kararlı gelir, düşük risk'
     },
     'orta': {
         'sectors': ['Bankacılık', 'Enerji', 'İnşaat', 'Otomotiv', 'Teknoloji', 'Gıda', 'Perakende', 'Kimya', 'Elektrik-Elektronik'],
-        'volatility_threshold': 0.50,
+        'volatility_threshold': 0.65,  # %65 - Dengeli risk
         'description': 'Dengeli risk-getiri'
     },
     'yüksek': {
         'sectors': ['Teknoloji', 'Savunma', 'Enerji', 'Havacılık', 'Demir-Çelik', 'Madencilik', 'Spor'],
-        'volatility_threshold': 1.0,
+        'volatility_threshold': 1.0,   # %100 - Sinirsiz (yuksek risk toleransi)
         'description': 'Yüksek getiri potansiyeli, yüksek risk'
     }
 }

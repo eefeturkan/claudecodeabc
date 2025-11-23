@@ -593,8 +593,8 @@ def optimize_with_preferences():
 
         # Risk profili aciklamasi
         risk_descriptions = {
-            'düşük': 'Dusuk risk profili (%30 volatilite limiti)',
-            'orta': 'Orta risk profili (%50 volatilite limiti)',
+            'düşük': 'Dusuk risk profili (%45 volatilite limiti)',
+            'orta': 'Orta risk profili (%65 volatilite limiti)',
             'yüksek': 'Yuksek risk profili'
         }
         risk_desc = risk_descriptions.get(e.risk_profile, e.risk_profile)
