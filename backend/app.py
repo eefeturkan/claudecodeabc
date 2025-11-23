@@ -576,7 +576,8 @@ def optimize_with_preferences():
                 'summary': {
                     'total_stocks': len(symbols),
                     'stocks_with_weight': sum(1 for w in weights_with_names if w['weight'] > 0.001),
-                    'expected_annual_return_pct': results['metrics']['expected_return'] * 100,
+                    'expected_return_pct': results['metrics']['expected_return'] * 100,  # main.js uyumu
+                    'expected_annual_return_pct': results['metrics']['expected_return'] * 100,  # main_new.js uyumu
                     'expected_total_return_pct': compound_return * 100,
                     'volatility_pct': results['metrics']['volatility'] * 100,
                     'sharpe_ratio': results['metrics']['sharpe_ratio']

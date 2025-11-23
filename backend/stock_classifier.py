@@ -5,7 +5,51 @@ Performans Bazlı Akıllı Seçim Sistemi
 
 import yfinance as yf
 import numpy as np
+import json
+import os
 from datetime import datetime, timedelta
+
+# =====================================================
+# CACHE SISTEMI - API cagrilarini azaltmak icin
+# =====================================================
+CACHE_DIR = os.path.join(os.path.dirname(__file__), 'cache')
+CACHE_FILE = os.path.join(CACHE_DIR, 'stock_performance_cache.json')
+CACHE_DURATION_HOURS = 24  # Cache 24 saat gecerli
+
+def _ensure_cache_dir():
+    """Cache dizinini olustur"""
+    if not os.path.exists(CACHE_DIR):
+        os.makedirs(CACHE_DIR)
+
+def _load_cache():
+    """Cache dosyasini yukle"""
+    _ensure_cache_dir()
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+def _save_cache(cache_data):
+    """Cache dosyasini kaydet"""
+    _ensure_cache_dir()
+    with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+        json.dump(cache_data, f, ensure_ascii=False, indent=2)
+
+def _is_cache_valid(cache_entry):
+    """Cache girisinin gecerli olup olmadigini kontrol et"""
+    if not cache_entry or 'timestamp' not in cache_entry:
+        return False
+    cache_time = datetime.fromisoformat(cache_entry['timestamp'])
+    return datetime.now() - cache_time < timedelta(hours=CACHE_DURATION_HOURS)
+
+def clear_cache():
+    """Cache'i temizle (manuel kullanim icin)"""
+    if os.path.exists(CACHE_FILE):
+        os.remove(CACHE_FILE)
+        print("[CACHE] Cache temizlendi")
 
 
 class NoStocksFoundError(Exception):
@@ -287,15 +331,16 @@ STOCK_SECTORS = {
 
     # Spor
     'GSRAY': 'Spor',
-    'GSDHO': 'Spor',
     'FENER': 'Spor',
     'BJKAS': 'Spor',
     'TSPOR': 'Spor',
 
+    # Denizcilik
+    'GSDHO': 'Holding',
+
     # Madencilik
     'KOZAA': 'Madencilik',
     'KOZAL': 'Madencilik',
-    'IPEKE': 'Madencilik',
 
     # Lojistik ve Ulaşım
     'RYSAS': 'Lojistik',
@@ -365,17 +410,28 @@ STOCK_SECTORS = {
 # gelismis piyasalara gore daha yuksek tutulmustur
 RISK_PROFILES = {
     'düşük': {
-        'sectors': ['Bankacılık', 'Gıda', 'Perakende', 'Holding', 'Sigorta'],
+        'sectors': [
+            'Bankacılık', 'Gıda', 'Perakende', 'Holding', 'Sigorta',
+            'Sağlık', 'Finans', 'Gayrimenkul'  # Stabil sektorler eklendi
+        ],
         'volatility_threshold': 0.45,  # %45 - BIST icin gercekci dusuk risk esigi
         'description': 'Kararlı gelir, düşük risk'
     },
     'orta': {
-        'sectors': ['Bankacılık', 'Enerji', 'İnşaat', 'Otomotiv', 'Teknoloji', 'Gıda', 'Perakende', 'Kimya', 'Elektrik-Elektronik'],
+        'sectors': [
+            'Bankacılık', 'Enerji', 'İnşaat', 'Otomotiv', 'Teknoloji',
+            'Gıda', 'Perakende', 'Kimya', 'Elektrik-Elektronik',
+            'Cam', 'Tekstil', 'Lojistik', 'Metal', 'Çimento',  # Orta riskli sektorler eklendi
+            'Makine', 'Seramik', 'Kağıt'
+        ],
         'volatility_threshold': 0.65,  # %65 - Dengeli risk
         'description': 'Dengeli risk-getiri'
     },
     'yüksek': {
-        'sectors': ['Teknoloji', 'Savunma', 'Enerji', 'Havacılık', 'Demir-Çelik', 'Madencilik', 'Spor'],
+        'sectors': [
+            'Teknoloji', 'Savunma', 'Enerji', 'Havacılık', 'Demir-Çelik',
+            'Madencilik', 'Spor', 'Tarım', 'Mobilya', 'Giyim', 'Ticaret'  # Yuksek riskli sektorler eklendi
+        ],
         'volatility_threshold': 1.0,   # %100 - Sinirsiz (yuksek risk toleransi)
         'description': 'Yüksek getiri potansiyeli, yüksek risk'
     }
@@ -427,6 +483,7 @@ def get_available_sectors():
 def calculate_stock_performance(symbol, period='1y'):
     """
     Bir hissenin performans metriklerini hesaplar
+    CACHE DESTEKLI: Ayni hisse icin tekrar API cagrisi yapmaz
 
     Args:
         symbol (str): Hisse sembolü
@@ -435,7 +492,18 @@ def calculate_stock_performance(symbol, period='1y'):
     Returns:
         dict: Performans metrikleri (sharpe, volatility, return, score)
     """
+    # Cache key olustur
+    cache_key = f"{symbol}_{period}"
+
+    # Cache'den kontrol et
+    cache = _load_cache()
+    if cache_key in cache and _is_cache_valid(cache[cache_key]):
+        print(f"    [CACHE] {symbol}: Cache'den yuklendi")
+        return cache[cache_key]['data']
+
+    # Cache'de yoksa veya suresi dolmussa API'den cek
     try:
+        print(f"    [API] {symbol}: Yahoo Finance'den cekiliyor...")
         ticker = yf.Ticker(f"{symbol}.IS")
         hist = ticker.history(period=period)
 
@@ -463,7 +531,7 @@ def calculate_stock_performance(symbol, period='1y'):
         # Sharpe önemli ama pozitif getiri de lazım
         score = (sharpe_ratio * 0.4) + (total_return * 0.3) + ((1 - min(volatility, 1)) * 0.3)
 
-        return {
+        result = {
             'symbol': symbol,
             'sharpe_ratio': sharpe_ratio,
             'volatility': volatility,
@@ -471,6 +539,15 @@ def calculate_stock_performance(symbol, period='1y'):
             'total_return': total_return,
             'score': score
         }
+
+        # Cache'e kaydet
+        cache[cache_key] = {
+            'timestamp': datetime.now().isoformat(),
+            'data': result
+        }
+        _save_cache(cache)
+
+        return result
     except Exception as e:
         print(f"Performans hesaplama hatası ({symbol}): {e}")
         return None
@@ -515,7 +592,7 @@ def rank_stocks_by_performance(symbols, period='1y', top_n=None, volatility_thre
     return ranked_symbols
 
 
-def filter_stocks_by_preferences(risk_profile='orta', sectors=None, max_stocks=10, use_performance_ranking=True):
+def filter_stocks_by_preferences(risk_profile='orta', investment_period='orta', sectors=None, max_stocks=10, use_performance_ranking=True):
     """
     Kullanıcı tercihlerine göre hisse filtreler
     PERFORMANS BAZLI SEÇİM + VOLATİLİTE FİLTRESİ:
@@ -523,6 +600,7 @@ def filter_stocks_by_preferences(risk_profile='orta', sectors=None, max_stocks=1
 
     Args:
         risk_profile (str): 'düşük', 'orta', 'yüksek'
+        investment_period (str): 'kısa', 'orta', 'uzun' - yatirim suresi
         sectors (list): İstenen sektörler (None ise tüm sektörler)
         max_stocks (int): Maksimum hisse sayısı
         use_performance_ranking (bool): Performans sıralaması kullanılsın mı
@@ -536,13 +614,9 @@ def filter_stocks_by_preferences(risk_profile='orta', sectors=None, max_stocks=1
     # Volatilite eşiği - HER ZAMAN risk profiline göre uygulanır
     volatility_threshold = profile['volatility_threshold']
 
-    # Yatırım süresine göre periyot belirle
-    period_map = {
-        'düşük': '1y',   # Düşük risk - 1 yıllık veri
-        'orta': '1y',    # Orta risk - 1 yıllık veri
-        'yüksek': '6mo'  # Yüksek risk - 6 aylık momentum
-    }
-    period = period_map.get(risk_profile, '1y')
+    # Yatırım süresine göre periyot belirle (INVESTMENT_PERIODS'dan al)
+    period_info = INVESTMENT_PERIODS.get(investment_period, INVESTMENT_PERIODS['orta'])
+    period = period_info['period']
 
     # Sektör seçimi: Kullanıcı seçimi varsa öncelik ona, yoksa risk profiline göre
     if sectors:
@@ -684,7 +758,13 @@ def get_recommendation_summary(risk_profile, investment_period, sectors, max_sto
     profile = RISK_PROFILES.get(risk_profile, RISK_PROFILES['orta'])
     period = INVESTMENT_PERIODS.get(investment_period, INVESTMENT_PERIODS['orta'])
 
-    recommended_stocks = filter_stocks_by_preferences(risk_profile, sectors, max_stocks)
+    # investment_period parametresi eklendi - period tutarliligi saglandi
+    recommended_stocks = filter_stocks_by_preferences(
+        risk_profile=risk_profile,
+        investment_period=investment_period,
+        sectors=sectors,
+        max_stocks=max_stocks
+    )
 
     return {
         'risk_profile': {
