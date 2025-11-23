@@ -1,8 +1,26 @@
 """
 BIST100 Hisse Senetleri Sektör Sınıflandırması ve Filtreleme
+Performans Bazlı Akıllı Seçim Sistemi
 """
 
-# Sektörel sınıflandırma
+import yfinance as yf
+import numpy as np
+from datetime import datetime, timedelta
+
+
+class NoStocksFoundError(Exception):
+    """
+    Volatilite filtresinden gecen hisse bulunamadiginda firlatilir.
+    Kullaniciya anlamli hata mesaji gostermek icin kullanilir.
+    """
+    def __init__(self, message, risk_profile, volatility_threshold, sectors, total_stocks_checked):
+        super().__init__(message)
+        self.risk_profile = risk_profile
+        self.volatility_threshold = volatility_threshold
+        self.sectors = sectors
+        self.total_stocks_checked = total_stocks_checked
+
+# Sektörel sınıflandırma - TÜM BIST HİSSELERİ
 STOCK_SECTORS = {
     # Bankacılık ve Finans
     'AKBNK': 'Bankacılık',
@@ -20,6 +38,10 @@ STOCK_SECTORS = {
     'PRKME': 'Finans',
     'VAKFN': 'Finans',
     'SEKFK': 'Finans',
+    'SNKRN': 'Finans',
+    'PSDTC': 'Finans',
+    'COSMO': 'Finans',
+    'UFUK': 'Finans',
 
     # Teknoloji ve Yazılım
     'LOGO': 'Teknoloji',
@@ -30,12 +52,20 @@ STOCK_SECTORS = {
     'KRONT': 'Teknoloji',
     'VBTYZ': 'Teknoloji',
     'TKNSA': 'Teknoloji',
+    'INDES': 'Teknoloji',
+    'MTRKS': 'Teknoloji',
+    'PKART': 'Teknoloji',
+    'PAPIL': 'Teknoloji',
+    'KONTR': 'Teknoloji',
+    'KFEIN': 'Teknoloji',
+    'REEDR': 'Teknoloji',
 
     # Savunma ve Havacılık
     'ASELS': 'Savunma',
     'THYAO': 'Havacılık',
     'PGSUS': 'Havacılık',
     'TAVHL': 'Havacılık',
+    'CLEBI': 'Havacılık',
 
     # Enerji
     'AKSEN': 'Enerji',
@@ -46,7 +76,7 @@ STOCK_SECTORS = {
     'AKFYE': 'Enerji',
     'ENJSA': 'Enerji',
     'TUPRS': 'Enerji',
-    'TGSAS': 'Enerji',  # TGSAN -> TGSAS (Tüpraş)
+    'TGSAS': 'Enerji',
     'PETKM': 'Enerji',
     'AYGAZ': 'Enerji',
     'ODAS': 'Enerji',
@@ -58,25 +88,43 @@ STOCK_SECTORS = {
     'SMRTG': 'Enerji',
     'ZEDUR': 'Enerji',
     'SUNTK': 'Enerji',
+    'IPEKE': 'Enerji',
+    'ALFAS': 'Enerji',
+    'PAMEL': 'Enerji',
+    'MEPET': 'Enerji',
+    'PKENT': 'Enerji',
+    'TRCAS': 'Enerji',
+    'PRKAB': 'Enerji',
 
-    # Perakende ve Gıda
+    # Perakende
     'BIMAS': 'Perakende',
     'SOKM': 'Perakende',
     'MGROS': 'Perakende',
     'BIZIM': 'Perakende',
     'MAVI': 'Perakende',
+    'KENT': 'Perakende',
+    'CRFSA': 'Perakende',
+    'VAKKO': 'Perakende',
+    'MPARK': 'Perakende',
+
+    # Gıda
     'ULKER': 'Gıda',
     'CCOLA': 'Gıda',
     'AEFES': 'Gıda',
     'PNSUT': 'Gıda',
-    'TATEN': 'Gıda',  # TATGD -> TATEN (Tat Gıda)
+    'TATEN': 'Gıda',
     'PENGD': 'Gıda',
     'TUKAS': 'Gıda',
     'SELGD': 'Gıda',
     'KERVT': 'Gıda',
     'BANVT': 'Gıda',
-    'KENT': 'Perakende',
-    'CRFSA': 'Perakende',
+    'TBORG': 'Gıda',
+    'SELVA': 'Gıda',
+    'TABGD': 'Gıda',
+    'KRSTL': 'Gıda',
+    'YYLGD': 'Gıda',
+    'YAYLA': 'Gıda',
+    'SUWEN': 'Gıda',
 
     # Otomotiv
     'FROTO': 'Otomotiv',
@@ -86,10 +134,18 @@ STOCK_SECTORS = {
     'TTRAK': 'Otomotiv',
     'ASUZU': 'Otomotiv',
     'KARSN': 'Otomotiv',
+    'KATMR': 'Otomotiv',
+    'TMSN': 'Otomotiv',
+    'PARSN': 'Otomotiv',
 
-    # İnşaat ve Gayrimenkul
+    # İnşaat
     'ENKAI': 'İnşaat',
     'TKFEN': 'İnşaat',
+    'IZOCM': 'İnşaat',
+    'BAKAB': 'İnşaat',
+    'BRLSM': 'İnşaat',
+
+    # Gayrimenkul (GYO)
     'EKGYO': 'Gayrimenkul',
     'ALGYO': 'Gayrimenkul',
     'ISGYO': 'Gayrimenkul',
@@ -109,8 +165,18 @@ STOCK_SECTORS = {
     'YESIL': 'Gayrimenkul',
     'YGGYO': 'Gayrimenkul',
     'AKFGY': 'Gayrimenkul',
+    'DAPGM': 'Gayrimenkul',
+    'IEYHO': 'Gayrimenkul',
+    'KRPLS': 'Gayrimenkul',
+    'KZBGY': 'Gayrimenkul',
+    'RGYAS': 'Gayrimenkul',
+    'RYGYO': 'Gayrimenkul',
+    'SEGYO': 'Gayrimenkul',
+    'SRVGY': 'Gayrimenkul',
+    'VKFYO': 'Gayrimenkul',
+    'YGYO': 'Gayrimenkul',
 
-    # Çimento ve Yapı Malzemeleri
+    # Çimento
     'AFYON': 'Çimento',
     'AKCNS': 'Çimento',
     'BTCIM': 'Çimento',
@@ -120,16 +186,26 @@ STOCK_SECTORS = {
     'OYAKC': 'Çimento',
     'BSOKE': 'Çimento',
     'CMENT': 'Çimento',
-    'IZOCM': 'İnşaat',
+    'GOLTS': 'Çimento',
+    'GLYHO': 'Holding',
+
+    # Metal
     'BRSAN': 'Metal',
     'BOBET': 'Metal',
+    'SARKY': 'Metal',
+    'ERBOS': 'Metal',
+    'FORMT': 'Metal',
+    'TUCLK': 'Metal',
+    'YKSLN': 'Metal',
 
-    # Demir-Çelik ve Metal
+    # Demir-Çelik
     'EREGL': 'Demir-Çelik',
     'KRDMA': 'Demir-Çelik',
     'KRDMB': 'Demir-Çelik',
+    'KRDMD': 'Demir-Çelik',
     'ISDMR': 'Demir-Çelik',
-    'SARKY': 'Metal',
+    'CEMTS': 'Demir-Çelik',
+    'CEMAS': 'Demir-Çelik',
 
     # Tekstil ve Deri
     'KORDS': 'Tekstil',
@@ -139,11 +215,16 @@ STOCK_SECTORS = {
     'SNPAM': 'Tekstil',
     'DESA': 'Tekstil',
     'KRTEK': 'Tekstil',
+    'SONME': 'Tekstil',
+    'SKTAS': 'Tekstil',
 
     # Cam ve Seramik
     'SISE': 'Cam',
-    'TRILC': 'Cam',  # TRKCM -> TRILC (Trakya Cam)
+    'TRILC': 'Cam',
     'KUTPO': 'Seramik',
+    'USAK': 'Seramik',
+    'KLRHO': 'Seramik',
+    'QUAGR': 'Seramik',
 
     # Holding
     'SAHOL': 'Holding',
@@ -158,6 +239,9 @@ STOCK_SECTORS = {
     'GOZDE': 'Holding',
     'DEVA': 'Holding',
     'ECZYT': 'Holding',
+    'BRYAT': 'Holding',
+    'SANKO': 'Holding',
+    'KRVGD': 'Holding',
 
     # Kimya
     'ALKIM': 'Kimya',
@@ -169,45 +253,128 @@ STOCK_SECTORS = {
     'GOODY': 'Kimya',
     'KLKIM': 'Kimya',
     'MERCN': 'Kimya',
+    'HEKTS': 'Kimya',
+    'BAGFS': 'Kimya',
+    'EGGUB': 'Kimya',
+    'TARKM': 'Kimya',
+    'SEYKM': 'Kimya',
+    'SODSN': 'Kimya',
+    'TMPOL': 'Kimya',
+    'KOPOL': 'Kimya',
 
     # Elektrik-Elektronik
     'ARCLK': 'Elektrik-Elektronik',
     'VESTL': 'Elektrik-Elektronik',
     'VESBE': 'Elektrik-Elektronik',
+    'KLMSN': 'Elektrik-Elektronik',
+    'SILVR': 'Elektrik-Elektronik',
 
-    # Hizmetler ve Sağlık
-    'CLEBI': 'Hizmetler',
+    # Sağlık ve İlaç
     'LKMNH': 'Sağlık',
     'MLP': 'Sağlık',
+    'ECILC': 'Sağlık',
+    'GENIL': 'Sağlık',
+    'RTALB': 'Sağlık',
+    'SELEC': 'Sağlık',
+    'BIOEN': 'Sağlık',
 
     # Sigorta
     'ANSGR': 'Sigorta',
     'ANHYT': 'Sigorta',
     'RAYSG': 'Sigorta',
     'TURSG': 'Sigorta',
+    'AGESA': 'Sigorta',
 
     # Spor
-    'GSRAY': 'Spor',  # GSRAY -> GSDHO (Galatasaray)
+    'GSRAY': 'Spor',
+    'GSDHO': 'Spor',
     'FENER': 'Spor',
     'BJKAS': 'Spor',
     'TSPOR': 'Spor',
+
+    # Madencilik
+    'KOZAA': 'Madencilik',
+    'KOZAL': 'Madencilik',
+    'IPEKE': 'Madencilik',
+
+    # Lojistik ve Ulaşım
+    'RYSAS': 'Lojistik',
+    'RALYH': 'Lojistik',
+    'KMPUR': 'Lojistik',
+    'TLMAN': 'Lojistik',
+    'PASEU': 'Lojistik',
+
+    # Kağıt ve Ambalaj
+    'KARTN': 'Kağıt',
+    'VKING': 'Kağıt',
+    'BARMA': 'Kağıt',
+    'TIRE': 'Kağıt',
+    'TEZOL': 'Kağıt',
+    'SAYAS': 'Kağıt',
+
+    # Tarım
+    'KAYSE': 'Tarım',
+    'MEKAG': 'Tarım',
+
+    # Savunma Sanayii (ek)
+    'ASTOR': 'Savunma',
+
+    # Makine ve Endüstriyel
+    'EGEEN': 'Makine',
+    'GESAN': 'Makine',
+    'GMTAS': 'Makine',
+    'ULUFA': 'Makine',
+    'UZERB': 'Makine',
+    'YEOTK': 'Makine',
+    'BRKSN': 'Makine',
+    'POLTK': 'Makine',
+    'RUBNS': 'Makine',
+
+    # Mobilya
+    'FLAP': 'Mobilya',
+    'RODRG': 'Mobilya',
+
+    # Giyim
+    'ROYAL': 'Giyim',
+    'SANFM': 'Giyim',
+
+    # Diğer
+    'ALMAD': 'Gıda',
+    'GRSEL': 'Finans',
+    'ICBCT': 'Finans',
+    'KTLEV': 'Finans',
+    'KTSKR': 'Gıda',
+    'OZRDN': 'Kimya',
+    'OZSUB': 'Gıda',
+    'PRZMA': 'Teknoloji',
+    'QUOGR': 'Seramik',
+    'SAMAT': 'Kimya',
+    'SANEL': 'Elektrik-Elektronik',
+    'SEGMN': 'Tekstil',
+    'SNICA': 'Kimya',
+    'TURGG': 'Finans',
+    'ULUSE': 'Elektrik-Elektronik',
+    'ULUUN': 'Gıda',
+    'VANGD': 'Gıda',
+    'VERTU': 'Teknoloji',
+    'VERUS': 'Finans',
 }
 
 # Risk Profilleri (volatilite bazlı)
 RISK_PROFILES = {
     'düşük': {
-        'sectors': ['Bankacılık', 'Gıda', 'Perakende', 'Holding'],
-        'volatility_threshold': 0.30,  # Düşük volatilite
+        'sectors': ['Bankacılık', 'Gıda', 'Perakende', 'Holding', 'Sigorta'],
+        'volatility_threshold': 0.30,
         'description': 'Kararlı gelir, düşük risk'
     },
     'orta': {
-        'sectors': ['Bankacılık', 'Enerji', 'İnşaat', 'Otomotiv', 'Teknoloji', 'Gıda', 'Perakende'],
+        'sectors': ['Bankacılık', 'Enerji', 'İnşaat', 'Otomotiv', 'Teknoloji', 'Gıda', 'Perakende', 'Kimya', 'Elektrik-Elektronik'],
         'volatility_threshold': 0.50,
         'description': 'Dengeli risk-getiri'
     },
     'yüksek': {
-        'sectors': ['Teknoloji', 'Savunma', 'Enerji', 'Havacılık', 'Demir-Çelik'],
-        'volatility_threshold': 1.0,  # Yüksek volatilite kabul edilir
+        'sectors': ['Teknoloji', 'Savunma', 'Enerji', 'Havacılık', 'Demir-Çelik', 'Madencilik', 'Spor'],
+        'volatility_threshold': 1.0,
         'description': 'Yüksek getiri potansiyeli, yüksek risk'
     }
 }
@@ -255,25 +422,130 @@ def get_available_sectors():
     return sorted(list(set(STOCK_SECTORS.values())))
 
 
-def filter_stocks_by_preferences(risk_profile='orta', sectors=None, max_stocks=10):
+def calculate_stock_performance(symbol, period='1y'):
+    """
+    Bir hissenin performans metriklerini hesaplar
+
+    Args:
+        symbol (str): Hisse sembolü
+        period (str): Veri periyodu ('6mo', '1y', '5y')
+
+    Returns:
+        dict: Performans metrikleri (sharpe, volatility, return, score)
+    """
+    try:
+        ticker = yf.Ticker(f"{symbol}.IS")
+        hist = ticker.history(period=period)
+
+        if hist.empty or len(hist) < 20:
+            return None
+
+        # Günlük getiriler
+        returns = hist['Close'].pct_change().dropna()
+
+        if len(returns) < 10:
+            return None
+
+        # Metrikler
+        mean_return = returns.mean() * 252  # Yıllık ortalama getiri
+        volatility = returns.std() * np.sqrt(252)  # Yıllık volatilite
+
+        # Sharpe Ratio (risksiz oran %15 varsayalım - Türkiye için)
+        risk_free_rate = 0.15
+        sharpe_ratio = (mean_return - risk_free_rate) / volatility if volatility > 0 else 0
+
+        # Toplam getiri
+        total_return = (hist['Close'].iloc[-1] / hist['Close'].iloc[0]) - 1
+
+        # Performans skoru (ağırlıklı)
+        # Sharpe önemli ama pozitif getiri de lazım
+        score = (sharpe_ratio * 0.4) + (total_return * 0.3) + ((1 - min(volatility, 1)) * 0.3)
+
+        return {
+            'symbol': symbol,
+            'sharpe_ratio': sharpe_ratio,
+            'volatility': volatility,
+            'annual_return': mean_return,
+            'total_return': total_return,
+            'score': score
+        }
+    except Exception as e:
+        print(f"Performans hesaplama hatası ({symbol}): {e}")
+        return None
+
+
+def rank_stocks_by_performance(symbols, period='1y', top_n=None, volatility_threshold=None):
+    """
+    Hisseleri performanslarına göre sıralar ve volatilite filtreleme uygular
+
+    Args:
+        symbols (list): Hisse sembolleri
+        period (str): Veri periyodu
+        top_n (int): En iyi kaç hisse döndürülsün (None ise hepsi)
+        volatility_threshold (float): Maksimum kabul edilebilir volatilite (None ise sınırsız)
+
+    Returns:
+        list: Performansa göre sıralı hisse listesi
+    """
+    performances = []
+
+    for symbol in symbols:
+        perf = calculate_stock_performance(symbol, period)
+        if perf:
+            # Volatilite filtresi uygula
+            if volatility_threshold is not None:
+                if perf['volatility'] <= volatility_threshold:
+                    performances.append(perf)
+                    print(f"    [OK] {symbol}: Volatilite {perf['volatility']:.2%} <= {volatility_threshold:.0%} (KABUL)")
+                else:
+                    print(f"    [X] {symbol}: Volatilite {perf['volatility']:.2%} > {volatility_threshold:.0%} (REDDEDILDI)")
+            else:
+                performances.append(perf)
+
+    # Skora göre sırala (yüksekten düşüğe)
+    performances.sort(key=lambda x: x['score'], reverse=True)
+
+    # Sadece sembolleri döndür
+    ranked_symbols = [p['symbol'] for p in performances]
+
+    if top_n:
+        return ranked_symbols[:top_n]
+    return ranked_symbols
+
+
+def filter_stocks_by_preferences(risk_profile='orta', sectors=None, max_stocks=10, use_performance_ranking=True):
     """
     Kullanıcı tercihlerine göre hisse filtreler
+    PERFORMANS BAZLI SEÇİM + VOLATİLİTE FİLTRESİ:
+    Risk profiline uygun volatilitedeki en iyi performanslı hisseler seçilir
 
     Args:
         risk_profile (str): 'düşük', 'orta', 'yüksek'
         sectors (list): İstenen sektörler (None ise tüm sektörler)
         max_stocks (int): Maksimum hisse sayısı
+        use_performance_ranking (bool): Performans sıralaması kullanılsın mı
 
     Returns:
-        list: Filtrelenmiş hisse sembolleri
+        list: Filtrelenmiş ve sıralanmış hisse sembolleri
     """
+    # Risk profilini al
+    profile = RISK_PROFILES.get(risk_profile, RISK_PROFILES['orta'])
+
+    # Volatilite eşiği - HER ZAMAN risk profiline göre uygulanır
+    volatility_threshold = profile['volatility_threshold']
+
+    # Yatırım süresine göre periyot belirle
+    period_map = {
+        'düşük': '1y',   # Düşük risk - 1 yıllık veri
+        'orta': '1y',    # Orta risk - 1 yıllık veri
+        'yüksek': '6mo'  # Yüksek risk - 6 aylık momentum
+    }
+    period = period_map.get(risk_profile, '1y')
+
     # Sektör seçimi: Kullanıcı seçimi varsa öncelik ona, yoksa risk profiline göre
     if sectors:
-        # Kullanıcı sektör belirtmişse, sadece onları kullan
         allowed_sectors = sectors
     else:
-        # Kullanıcı sektör belirtmemişse, risk profiline göre uygun sektörleri al
-        profile = RISK_PROFILES.get(risk_profile, RISK_PROFILES['orta'])
         allowed_sectors = profile['sectors']
 
     # Sektörlere göre hisseleri filtrele
@@ -282,39 +554,116 @@ def filter_stocks_by_preferences(risk_profile='orta', sectors=None, max_stocks=1
         if sector in allowed_sectors:
             filtered_stocks.append(symbol)
 
-    # Çeşitlilik için sektörlerden dengeli dağılım
-    stocks_by_sector = {}
-    for symbol in filtered_stocks:
-        sector = STOCK_SECTORS[symbol]
-        if sector not in stocks_by_sector:
-            stocks_by_sector[sector] = []
-        stocks_by_sector[sector].append(symbol)
+    print(f"\n{'='*60}")
+    print(f"[Filtre] Risk Profili: {risk_profile.upper()}")
+    print(f"[Filtre] Volatilite Esigi: <= {volatility_threshold:.0%}")
+    print(f"[Filtre] Sektorler: {allowed_sectors}")
+    print(f"[Filtre] Filtrelenmis hisse havuzu: {len(filtered_stocks)} hisse")
+    print(f"{'='*60}")
 
-    # Her sektörden eşit sayıda hisse al
-    balanced_stocks = []
+    # Performans bazlı sıralama
+    if use_performance_ranking and len(filtered_stocks) > 0:
+        print(f"\n[Performans Analizi] {len(filtered_stocks)} hisse analiz ediliyor...")
+        print(f"[Volatilite Filtresi] Sadece <= {volatility_threshold:.0%} volatiliteli hisseler kabul edilecek\n")
 
-    # Eğer hiç hisse bulunamadıysa boş liste döndür
-    if len(stocks_by_sector) == 0:
-        return []
+        # Sektör bazlı performans analizi
+        stocks_by_sector = {}
+        for symbol in filtered_stocks:
+            sector = STOCK_SECTORS[symbol]
+            if sector not in stocks_by_sector:
+                stocks_by_sector[sector] = []
+            stocks_by_sector[sector].append(symbol)
 
-    stocks_per_sector = max(1, max_stocks // len(stocks_by_sector))
+        # Her sektörden en iyi performans gösterenleri al (volatilite filtreli)
+        balanced_stocks = []
+        stocks_per_sector = max(1, max_stocks // len(stocks_by_sector))
 
-    for sector, symbols in stocks_by_sector.items():
-        balanced_stocks.extend(symbols[:stocks_per_sector])
+        for sector, symbols in stocks_by_sector.items():
+            print(f"\n  [{sector}] sektoru analiz ediliyor...")
+            # Sektordeki hisseleri performansa gore sirala VE volatilite filtrele
+            ranked = rank_stocks_by_performance(
+                symbols,
+                period,
+                top_n=stocks_per_sector,
+                volatility_threshold=volatility_threshold  # Volatilite filtresi
+            )
+            balanced_stocks.extend(ranked)
+            if ranked:
+                print(f"  [{sector}] Secilen hisseler: {ranked}")
+            else:
+                print(f"  [{sector}] Uygun hisse bulunamadi (volatilite cok yuksek)")
 
-    # Max hisse sayısını aşmıyorsa geri kalanı ekle
-    if len(balanced_stocks) < max_stocks:
-        remaining = max_stocks - len(balanced_stocks)
-        for symbols in stocks_by_sector.values():
-            for symbol in symbols:
-                if symbol not in balanced_stocks:
-                    balanced_stocks.append(symbol)
-                    if len(balanced_stocks) >= max_stocks:
-                        break
-            if len(balanced_stocks) >= max_stocks:
-                break
+        # Max hisse sayısını aşıyorsa, genel performansa göre kes
+        if len(balanced_stocks) > max_stocks:
+            # Tüm seçilenleri tekrar sırala ve en iyileri al
+            balanced_stocks = rank_stocks_by_performance(
+                balanced_stocks,
+                period,
+                top_n=max_stocks,
+                volatility_threshold=volatility_threshold
+            )
 
-    return balanced_stocks[:max_stocks]
+        # Hala eksikse, diğer sektörlerden ekle
+        elif len(balanced_stocks) < max_stocks:
+            remaining_needed = max_stocks - len(balanced_stocks)
+            remaining_stocks = [s for s in filtered_stocks if s not in balanced_stocks]
+            print(f"\n[Ek Arama] {remaining_needed} hisse daha gerekli, diger hisseler kontrol ediliyor...")
+            additional = rank_stocks_by_performance(
+                remaining_stocks,
+                period,
+                top_n=remaining_needed,
+                volatility_threshold=volatility_threshold
+            )
+            balanced_stocks.extend(additional)
+
+        print(f"\n{'='*60}")
+        print(f"[SONUC] Risk: {risk_profile.upper()} | Volatilite Esigi: <={volatility_threshold:.0%}")
+        print(f"[SONUC] Secilen {len(balanced_stocks)} hisse: {balanced_stocks}")
+        print(f"{'='*60}\n")
+
+        # HATA KONTROLU: Hic hisse bulunamadiysa kullaniciya anlamli mesaj ver
+        if len(balanced_stocks) == 0:
+            sector_names = ", ".join(allowed_sectors) if isinstance(allowed_sectors, list) else str(allowed_sectors)
+            raise NoStocksFoundError(
+                message=f"Secilen sektorlerde ({sector_names}) {risk_profile} risk profiline uygun hisse bulunamadi.",
+                risk_profile=risk_profile,
+                volatility_threshold=volatility_threshold,
+                sectors=allowed_sectors,
+                total_stocks_checked=len(filtered_stocks)
+            )
+
+        return balanced_stocks[:max_stocks]
+
+    else:
+        # Performans sıralaması kapalıysa eski yöntem
+        stocks_by_sector = {}
+        for symbol in filtered_stocks:
+            sector = STOCK_SECTORS[symbol]
+            if sector not in stocks_by_sector:
+                stocks_by_sector[sector] = []
+            stocks_by_sector[sector].append(symbol)
+
+        balanced_stocks = []
+        if len(stocks_by_sector) == 0:
+            return []
+
+        stocks_per_sector = max(1, max_stocks // len(stocks_by_sector))
+
+        for sector, symbols in stocks_by_sector.items():
+            balanced_stocks.extend(symbols[:stocks_per_sector])
+
+        if len(balanced_stocks) < max_stocks:
+            remaining = max_stocks - len(balanced_stocks)
+            for symbols in stocks_by_sector.values():
+                for symbol in symbols:
+                    if symbol not in balanced_stocks:
+                        balanced_stocks.append(symbol)
+                        if len(balanced_stocks) >= max_stocks:
+                            break
+                if len(balanced_stocks) >= max_stocks:
+                    break
+
+        return balanced_stocks[:max_stocks]
 
 
 def get_recommendation_summary(risk_profile, investment_period, sectors, max_stocks):
@@ -352,3 +701,18 @@ def get_recommendation_summary(risk_profile, investment_period, sectors, max_sto
         'stock_count': len(recommended_stocks),
         'max_stocks': max_stocks
     }
+
+
+def get_sector_statistics():
+    """
+    Sektör bazlı istatistikleri döndürür
+
+    Returns:
+        dict: Her sektördeki hisse sayısı
+    """
+    stats = {}
+    for symbol, sector in STOCK_SECTORS.items():
+        if sector not in stats:
+            stats[sector] = 0
+        stats[sector] += 1
+    return dict(sorted(stats.items(), key=lambda x: x[1], reverse=True))

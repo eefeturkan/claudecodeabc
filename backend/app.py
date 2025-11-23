@@ -18,7 +18,8 @@ from stock_classifier import (
     filter_stocks_by_preferences,
     get_recommendation_summary,
     RISK_PROFILES,
-    INVESTMENT_PERIODS
+    INVESTMENT_PERIODS,
+    NoStocksFoundError
 )
 
 app = Flask(__name__,
@@ -584,6 +585,45 @@ def optimize_with_preferences():
         }
 
         return jsonify(response)
+
+    except NoStocksFoundError as e:
+        # Volatilite filtresinden gecen hisse bulunamadi - kullaniciya anlamli mesaj goster
+        import traceback
+        traceback.print_exc()
+
+        # Risk profili aciklamasi
+        risk_descriptions = {
+            'düşük': 'Dusuk risk profili (%30 volatilite limiti)',
+            'orta': 'Orta risk profili (%50 volatilite limiti)',
+            'yüksek': 'Yuksek risk profili'
+        }
+        risk_desc = risk_descriptions.get(e.risk_profile, e.risk_profile)
+
+        # Sektor listesi
+        sector_list = ", ".join(e.sectors) if isinstance(e.sectors, list) else str(e.sectors)
+
+        # Detayli hata mesaji
+        detailed_message = (
+            f"Sectiginiz sektorlerde ({sector_list}) {risk_desc} icin uygun hisse bulunamadi.\n\n"
+            f"Sebep: {e.total_stocks_checked} hisse incelendi, ancak hicbiri "
+            f"volatilite limitinin ({e.volatility_threshold:.0%}) altinda degil.\n\n"
+            f"Oneriler:\n"
+            f"- Farkli sektorler secmeyi deneyin\n"
+            f"- Risk profilini 'orta' veya 'yuksek' olarak degistirin\n"
+            f"- Birden fazla sektor secerek cesitliligi artirin"
+        )
+
+        return jsonify({
+            'success': False,
+            'error': detailed_message,
+            'error_type': 'no_stocks_found',
+            'details': {
+                'risk_profile': e.risk_profile,
+                'volatility_threshold': e.volatility_threshold,
+                'sectors': e.sectors,
+                'stocks_checked': e.total_stocks_checked
+            }
+        }), 400
 
     except Exception as e:
         import traceback
