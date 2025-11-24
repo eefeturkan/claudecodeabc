@@ -16,12 +16,45 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Bilgi paneli toggle
     setupInfoPanel();
 
+    // Risk profili değişiklik dinleyicisi
+    setupRiskProfileListener();
+
     // Sektörleri yükle
     await loadSectors();
 
     // Event listeners
     document.getElementById('analyzeBtn').addEventListener('click', analyzePortfolio);
 });
+
+
+/**
+ * Risk profili değiştiğinde ilgili sektör notunu göster
+ */
+function setupRiskProfileListener() {
+    const riskRadios = document.querySelectorAll('input[name="riskProfile"]');
+
+    riskRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Tüm notları gizle
+            document.getElementById('lowRiskSectors').style.display = 'none';
+            document.getElementById('mediumRiskSectors').style.display = 'none';
+            document.getElementById('highRiskSectors').style.display = 'none';
+
+            // Seçilen risk profiline göre notu göster
+            switch(this.value) {
+                case 'düşük':
+                    document.getElementById('lowRiskSectors').style.display = 'block';
+                    break;
+                case 'orta':
+                    document.getElementById('mediumRiskSectors').style.display = 'block';
+                    break;
+                case 'yüksek':
+                    document.getElementById('highRiskSectors').style.display = 'block';
+                    break;
+            }
+        });
+    });
+}
 
 
 /**

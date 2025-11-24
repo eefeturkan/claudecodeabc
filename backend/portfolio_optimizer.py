@@ -14,7 +14,7 @@ class PortfolioOptimizer:
     def __init__(
         self,
         returns_df: pd.DataFrame,
-        risk_free_rate: float = 0.10,
+        risk_free_rate: float = 0.45,
         min_weight: float = 0.0,
         max_weight: float = 0.5
     ):

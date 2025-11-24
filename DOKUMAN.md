@@ -60,7 +60,7 @@ Bu çalışma aşağıdaki açılardan önem taşımaktadır:
 - **Akademik Katkı**: Sürü zekası algoritmalarının Türk hisse senedi piyasasında uygulanabilirliğini göstermektedir
 - **Pratik Değer**: Bireysel yatırımcılar için kullanımı kolay, bilimsel temelli bir karar destek sistemi sunmaktadır
 - **Teknolojik İnovasyon**: Modern web teknolojileri ile finans mühendisliği algoritmalarını entegre etmektedir
-- **Yerelleştirme**: BIST100'e özgü sektör sınıflandırması ve Türkiye'nin yüksek enflasyon ortamını (risksiz faiz oranı %45) dikkate almaktadır
+- **Yerelleştirme**: BIST100'e özgü sektör sınıflandırması ve Türkiye piyasa koşullarını (risksiz faiz oranı %45) dikkate almaktadır
 
 ---
 
@@ -141,22 +141,38 @@ Mevcut çalışmalar genellikle akademik odaklıdır ve kullanıcı tercihlerini
 
 **Sektör Sınıflandırması:**
 
-Hisse senetleri 14 sektöre ayrılmıştır:
+Hisse senetleri 31 sektöre ayrılmıştır:
 1. Bankacılık
-2. Holding
-3. Teknoloji
-4. Enerji
-5. Demir-Çelik
-6. Cam
-7. Gıda
-8. Finans
-9. Gayrimenkul
-10. Havacılık
-11. Kimya
-12. Metal
-13. Otomotiv
-14. Perakende
-15. Savunma
+2. Cam
+3. Çimento
+4. Demir-Çelik
+5. Elektrik-Elektronik
+6. Enerji
+7. Finans
+8. Gayrimenkul
+9. Gıda
+10. Giyim
+11. Havacılık
+12. Holding
+13. İnşaat
+14. Kağıt
+15. Kimya
+16. Lojistik
+17. Madencilik
+18. Makine
+19. Metal
+20. Mobilya
+21. Otomotiv
+22. Perakende
+23. Sağlık
+24. Savunma
+25. Seramik
+26. Sigorta
+27. Spor
+28. Tarım
+29. Teknoloji
+30. Tekstil
+31. Ticaret
 
 ### 3.2. Yazılım ve Kütüphaneler
 
@@ -529,7 +545,7 @@ def sharpe_ratio(self, weights):
 - Sharpe > 3.0: Mükemmel
 
 **Türkiye Piyasası için Not:**
-Türkiye'de yüksek enflasyon ve faiz oranları nedeniyle (2024'te %45 civarı), Sharpe ratio değerleri genellikle düşük çıkmaktadır.
+Sistemde risksiz faiz oranı varsayılan olarak %45 kullanılmaktadır (Türkiye hazine faiz oranı). Kullanıcılar bu değeri gelişmiş ayarlardan değiştirebilir.
 
 **6.2.2. Sortino Ratio**
 
@@ -1172,7 +1188,7 @@ Uygulamanın performansı 5 farklı senaryo ile test edilmiştir:
 - Yüksek getiri potansiyeli (%67.89 yıllık)
 - Ancak yüksek volatilite (%42.78) ve drawdown (-35.92%)
 - 5 yılda 14 kat artış beklentisi (riskli)
-- Sharpe Ratio düşük (0.534) çünkü Türkiye'de risksiz faiz %45
+- Sharpe Ratio düşük (0.534) yüksek volatilite nedeniyle
 
 ### 8.5. Yakınsama Analizi
 
@@ -1248,7 +1264,7 @@ Bu çalışmada, Yapay Arı Kolonisi algoritması kullanılarak BIST100 hisse se
    - Diversification Ratio 1.23 ile 1.78 arasında değişmektedir (>1 iyi)
 
 4. **Türkiye Özelinde Bulgular:**
-   - Yüksek risksiz faiz oranı (%45) Sharpe Ratio değerlerini düşürmektedir
+   - Sistemde varsayılan risksiz faiz oranı %45 olarak kullanılmaktadır
    - Teknoloji ve savunma hisseleri yüksek getiri potansiyeline sahiptir
    - Bankacılık hisseleri düşük volatilite sunmaktadır
 
@@ -1321,11 +1337,11 @@ Altay, E., & Satman, M. H. (2005). Stock market forecasting: Artificial neural n
 
 Anagnostopoulos, K. P., & Mamanis, G. (2011). The mean–variance cardinality constrained portfolio optimization problem: An experimental evaluation of five multiobjective evolutionary algorithms. *Expert Systems with Applications*, 38(11), 14208-14217.
 
-Bustos, O., & Pomares-Hernández, S. E. (2020). An ACO-based approach for multiobjective portfolio optimization. *Swarm Intelligence*, 14(1), 45-64.
+Metaxiotis, K., & Liagkouras, K. (2012). Multiobjective evolutionary algorithms for portfolio management: A comprehensive literature review. *Expert Systems with Applications*, 39(14), 11685-11702.
 
 Chang, T. J., Meade, N., Beasley, J. E., & Sharaiha, Y. M. (2000). Heuristics for cardinality constrained portfolio optimisation. *Computers & Operations Research*, 27(13), 1271-1302.
 
-Chen, W., Zhang, R. T., Cai, Y. M., & Xu, F. Q. (2013). Particle swarm optimization for constrained portfolio selection problems. *International Journal of Computational Intelligence Systems*, 6(1), 132-142.
+Chen, W., Zhang, R. T., Cai, Y. M., & Xu, F. S. (2006). Particle swarm optimization for constrained portfolio selection problems. *Proceedings of the 2006 International Conference on Machine Learning and Cybernetics*, 2425-2429.
 
 Cura, T. (2009). Particle swarm optimization approach to portfolio optimization. *Nonlinear Analysis: Real World Applications*, 10(4), 2396-2406.
 
@@ -1341,7 +1357,7 @@ Karaboga, D., & Basturk, B. (2007). A powerful and efficient algorithm for numer
 
 Kennedy, J., & Eberhart, R. (1995). Particle swarm optimization. *Proceedings of ICNN'95 - International Conference on Neural Networks*, 4, 1942-1948.
 
-Kıran, M. S., & Babalık, A. (2014). A novel hybrid artificial bee colony algorithm for numerical function optimization. *Applied Soft Computing*, 21, 1-12.
+Kıran, M. S., & Gündüz, M. (2013). A recombination-based hybridization of particle swarm optimization and artificial bee colony algorithm for continuous optimization problems. *Applied Soft Computing*, 13(4), 2188-2203.
 
 Markowitz, H. (1952). Portfolio selection. *The Journal of Finance*, 7(1), 77-91.
 
@@ -1353,7 +1369,7 @@ Skolpadungket, P., Dahal, K., & Harnpornchai, N. (2007). Portfolio optimization 
 
 Sortino, F. A., & Van Der Meer, R. (1991). Downside risk. *Journal of Portfolio Management*, 17(4), 27-31.
 
-Yolcu, U., Aladag, C. H., Egrioglu, E., & Bas, E. (2016). A new hybrid approach for portfolio selection problem. *Expert Systems with Applications*, 61, 394-403.
+Deng, G. F., Lin, W. T., & Lo, C. C. (2012). Markowitz-based portfolio selection with cardinality constraints using improved particle swarm optimization. *Expert Systems with Applications*, 39(4), 4558-4566.
 
 ### Kitaplar
 

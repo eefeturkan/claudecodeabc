@@ -31,23 +31,32 @@
                                 <input type="radio" name="riskProfile" value="düşük">
                                 <span class="radio-label">
                                     <strong>Düşük Risk</strong>
-                                    <small>Kararlı gelir, düşük volatilite</small>
+                                    <small>Kararlı gelir, düşük volatilite (max %45)</small>
                                 </span>
                             </label>
+                            <div class="risk-sectors-note" id="lowRiskSectors" style="display: none;">
+                                <small>Varsayılan sektörler: Bankacılık, Gıda, Perakende, Holding, Sigorta, Sağlık, Finans, Gayrimenkul</small>
+                            </div>
                             <label class="radio-option">
                                 <input type="radio" name="riskProfile" value="orta" checked>
                                 <span class="radio-label">
                                     <strong>Orta Risk</strong>
-                                    <small>Dengeli risk-getiri yaklaşımı</small>
+                                    <small>Dengeli risk-getiri yaklaşımı (max %65)</small>
                                 </span>
                             </label>
+                            <div class="risk-sectors-note" id="mediumRiskSectors" style="display: block;">
+                                <small>Varsayılan sektörler: Bankacılık, Enerji, İnşaat, Otomotiv, Teknoloji, Gıda, Perakende, Kimya, Elektrik-Elektronik, Cam, Tekstil, Lojistik, Metal, Çimento, Makine, Seramik, Kağıt</small>
+                            </div>
                             <label class="radio-option">
                                 <input type="radio" name="riskProfile" value="yüksek">
                                 <span class="radio-label">
                                     <strong>Yüksek Risk</strong>
-                                    <small>Yüksek getiri potansiyeli</small>
+                                    <small>Yüksek getiri potansiyeli (max %100)</small>
                                 </span>
                             </label>
+                            <div class="risk-sectors-note" id="highRiskSectors" style="display: none;">
+                                <small>Varsayılan sektörler: Teknoloji, Savunma, Enerji, Havacılık, Demir-Çelik, Madencilik, Spor, Tarım, Mobilya, Giyim, Ticaret</small>
+                            </div>
                         </div>
                     </div>
                 </div>

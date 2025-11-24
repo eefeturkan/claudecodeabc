@@ -10,11 +10,11 @@ import pandas as pd
 class PortfolioMetrics:
     """Portföy performans metrikleri hesaplama sınıfı"""
 
-    def __init__(self, returns_df, risk_free_rate=0.10):
+    def __init__(self, returns_df, risk_free_rate=0.45):
         """
         Args:
             returns_df (pd.DataFrame): Günlük getiri verileri
-            risk_free_rate (float): Risksiz faiz oranı (yıllık, varsayılan %10)
+            risk_free_rate (float): Risksiz faiz oranı (yıllık, varsayılan %45 - Türkiye)
         """
         self.returns_df = returns_df
         self.risk_free_rate = risk_free_rate

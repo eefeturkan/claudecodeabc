@@ -80,7 +80,7 @@ def optimize_portfolio():
             "max_iterations": 100,
             "min_weight": 0.0,
             "max_weight": 0.5,
-            "risk_free_rate": 0.10
+            "risk_free_rate": 0.45
         }
 
     Returns:
@@ -97,7 +97,7 @@ def optimize_portfolio():
         max_iterations = data.get('max_iterations', 100)
         min_weight = data.get('min_weight', 0.0)
         max_weight = data.get('max_weight', 0.5)
-        risk_free_rate = data.get('risk_free_rate', 0.10)
+        risk_free_rate = data.get('risk_free_rate', 0.45)
         investment_amount = data.get('investment_amount', 100000)
 
         # Validasyon
@@ -390,7 +390,7 @@ def optimize_with_preferences():
             "max_iterations": 100,
             "min_weight": 0.0,
             "max_weight": 0.5,
-            "risk_free_rate": 0.10,
+            "risk_free_rate": 0.45,
             "investment_amount": 100000
         }
 
@@ -411,7 +411,7 @@ def optimize_with_preferences():
         max_iterations = data.get('max_iterations', 100)
         min_weight = data.get('min_weight', 0.0)
         max_weight = data.get('max_weight', 0.30)  # Varsayılan %30 - daha iyi çeşitlendirme
-        risk_free_rate = data.get('risk_free_rate', 0.10)
+        risk_free_rate = data.get('risk_free_rate', 0.45)
         investment_amount = data.get('investment_amount', 100000)
 
         # ZORUNLU ÇEŞİTLENDİRME: Her hisseye minimum ağırlık ver
