@@ -21,7 +21,7 @@ Tum risk profili ve yatirim suresi kombinasyonlari test edildi:
 | 7 | Yuksek | Kisa (6 ay) | BASARILI |
 | 8 | Yuksek | Orta (1 yil) | BASARILI |
 | 9 | Yuksek | Uzun (5 yil) | BASARILI |
-
+    
 ---
 
 ## 2. PERFORMANS SONUCLARI

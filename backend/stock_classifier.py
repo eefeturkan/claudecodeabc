@@ -571,15 +571,34 @@ def rank_stocks_by_performance(symbols, period='1y', top_n=None, volatility_thre
     for symbol in symbols:
         perf = calculate_stock_performance(symbol, period)
         if perf:
-            # Volatilite filtresi uygula
+            # PERFORMANS FİLTRELERİ
+            # 1. Volatilite filtresi
+            # 2. Sharpe Ratio > 0 (negatif risk-ayarlı getiri kabul edilmez)
+            # 3. Score > 0 (genel performans pozitif olmalı)
+
+            volatility_ok = volatility_threshold is None or perf['volatility'] <= volatility_threshold
+            sharpe_ok = perf['sharpe_ratio'] > 0
+            score_ok = perf['score'] > 0
+
             if volatility_threshold is not None:
-                if perf['volatility'] <= volatility_threshold:
+                if volatility_ok and sharpe_ok and score_ok:
                     performances.append(perf)
-                    print(f"    [OK] {symbol}: Volatilite {perf['volatility']:.2%} <= {volatility_threshold:.0%} (KABUL)")
+                    print(f"    [OK] {symbol}: Vol={perf['volatility']:.2%}, Sharpe={perf['sharpe_ratio']:.2f}, Score={perf['score']:.2f} (KABUL)")
                 else:
-                    print(f"    [X] {symbol}: Volatilite {perf['volatility']:.2%} > {volatility_threshold:.0%} (REDDEDILDI)")
+                    reasons = []
+                    if not volatility_ok:
+                        reasons.append(f"Vol={perf['volatility']:.2%}>{volatility_threshold:.0%}")
+                    if not sharpe_ok:
+                        reasons.append(f"Sharpe={perf['sharpe_ratio']:.2f}<0")
+                    if not score_ok:
+                        reasons.append(f"Score={perf['score']:.2f}<0")
+                    print(f"    [X] {symbol}: {', '.join(reasons)} (REDDEDILDI)")
             else:
-                performances.append(perf)
+                # Volatilite limiti yoksa sadece Sharpe ve Score kontrolü
+                if sharpe_ok and score_ok:
+                    performances.append(perf)
+                else:
+                    print(f"    [X] {symbol}: Kötü performans (Sharpe={perf['sharpe_ratio']:.2f}, Score={perf['score']:.2f})")
 
     # Skora göre sırala (yüksekten düşüğe)
     performances.sort(key=lambda x: x['score'], reverse=True)

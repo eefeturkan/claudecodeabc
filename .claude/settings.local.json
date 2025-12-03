@@ -5,7 +5,9 @@
       "Bash(curl:*)",
       "Bash(python test_system.py:*)",
       "Bash(chcp 65001)",
-      "Bash(PYTHONIOENCODING=utf-8 python:*)"
+      "Bash(PYTHONIOENCODING=utf-8 python:*)",
+      "Bash(python:*)",
+      "Bash(chcp 6500)"
     ],
     "deny": [],
     "ask": []
